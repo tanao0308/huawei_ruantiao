@@ -30,7 +30,7 @@ struct Gds { //每个货物如未被拿到则1000帧后消失
         return (double)v/d<(double)b.v/b.d;
     }
     bool reachable(int t0)const {
-        return t+1000-t0>d;
+        return t+1000-t0+2>d;
     }
 };
 struct Berth
@@ -65,8 +65,10 @@ struct Berth
         while(!q.empty())
         {
             node u=q.front();q.pop();
-            for(int i=0;i<4;++i)
+            int randi[4]={0,1,2,3};random_shuffle(randi,randi+4);
+            for(int ii=0;ii<4;++ii)
             {
+                int i=randi[ii];
                 node v=(node){u.x+dx[i],u.y+dy[i],u.s+1};
                 if(!v.walkable()||route[v.y][v.x]!=-1)continue;
                 dis[v.y][v.x]=v.s;

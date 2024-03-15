@@ -59,6 +59,8 @@ public:
             }
             else
             {
+                if(gds_num+berth[tar].loading_speed>boat_capacity)cerr<<"boat capacity is too small"<<endl;
+                if(berth[tar].gds_num-berth[tar].loading_speed<0)cerr<<"goods is too few"<<endl;
                 berth[tar].q_boat.pop();
                 tar=-1;
                 return tar+1;

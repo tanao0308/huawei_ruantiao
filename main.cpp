@@ -20,22 +20,55 @@ ROBOT robot[10];
 BOAT boat[5];
 
 
-void get_mp_ber()
+void get_mp_ber(int k=10)
 {
-    for(int i=0;i<n;++i)
-        for(int j=0;j<n;++j)
-        {
-            int b0=-1;
-            for(int b=0;b<berth_num;++b)
-            {
-                if(berth[b].dis[i][j]>=1e9)continue;
-                if(b0==-1||berth[b].dis[i][j]<berth[b0].dis[i][j])
-                    b0=b;
-            }
-            mp_ber[i][j]=b0;
-            // mp_ber[i][j]=rand()%10;
-        }
+    memset(mp_ber,-1,sizeof mp_ber);
+    int sum[10]={0};
+    int dis[10]={0};
+    for(int t=0;t<5000;++t)
+    {
+        int b=0;bool flag=0;
+        for(int i=1;i<10;++i)
+            if(sum[b]>sum[i])
+                b=i;
+        for(int i=0;i<n;++i)
+            for(int j=0;j<n;++j)
+                if(berth[b].dis[i][j]>dis[b]&&berth[b].dis[i][j]<=dis[b]+k&&mp_ber[i][j]==-1)
+                {
+                    flag=1;
+                    sum[b]+=berth[b].dis[i][j];
+                    mp_ber[i][j]=b;
+                }
+        dis[b]+=k;
+        // if(!flag)break;
+    }
+
+    // cerr<<endl;
+    // for(int i=0;i<n;++i)
+    // {
+    //     for(int j=0;j<n;++j)
+    //         if(mp_ber[i][j]==-1)cerr<<"X";
+    //         else cerr<<mp_ber[i][j];
+    //     cerr<<endl;
+    // }
+    // while(1);
 }
+// void get_mp_ber()
+// {
+//     for(int i=0;i<n;++i)
+//         for(int j=0;j<n;++j)
+//         {
+//             int b0=-1;
+//             for(int b=0;b<berth_num;++b)
+//             {
+//                 if(berth[b].dis[i][j]>=1e9)continue;
+//                 if(b0==-1||berth[b].dis[i][j]<berth[b0].dis[i][j])
+//                     b0=b;
+//             }
+//             mp_ber[i][j]=b0;
+//             // mp_ber[i][j]=rand()%10;
+//         }
+// }
 void Init()
 {
     for(int i=0;i<n;i++)
