@@ -25,7 +25,7 @@ struct node {
     }
 };
 struct Gds { //每个货物如未被拿到则1000帧后消失
-    int x,y,t,v;
+    int x,y,t,v,d;//位置、生成时间、价值、离最近港口距离
 };
 struct Berth
 {
@@ -72,12 +72,12 @@ struct Berth
     queue<Gds>q;
     void update(int t)
     {
-        while(!q.empty()&&t-q.front().t>1000-500)//50为参数
+        while(!q.empty()&&t-q.front().t>1000-300)//50为参数
             q.pop();
     }
     Gds get_gds()
     {
-        if(q.empty())return (Gds){-1,-1,-1,-1};
+        if(q.empty())return (Gds){-1,-1,-1,-1,-1};
         Gds gds=q.front();
         q.pop();
         return gds;

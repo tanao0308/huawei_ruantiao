@@ -41,7 +41,7 @@ void Init()
         for(int j=0;j<n;++j)
         {
             int b0=-1;
-            for(int b=1;b<berth_num;++b)
+            for(int b=0;b<berth_num;++b)
             {
                 if(berth[b].dis[i][j]==-1)continue;
                 if(b0==-1||berth[b].dis[i][j]<berth[b0].dis[i][j])
@@ -63,8 +63,8 @@ void Input()
     {
         int x,y,v;
         scanf("%d%d%d",&y,&x,&v); //新增货物的位置和价值
-        if(mp_ber[y][x]==-1)continue;
-        berth[mp_ber[y][x]].q.push((Gds){x,y,id,v});
+        int ber=mp_ber[y][x];if(ber==-1)continue;
+        berth[ber].q.push((Gds){x,y,id,v,berth[ber].dis[y][x]});
         mp_gds[y][x]=v;
     }
     for(int i=0;i<robot_num;i++)

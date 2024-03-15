@@ -7,7 +7,7 @@ extern const int N;
 extern const int robot_num;
 extern const int boat_num;
 extern const int berth_num;
-extern const int dx[4],dy[4];;
+extern const int dx[4],dy[4];
 extern int id,money,boat_capacity;
 extern char mp[200][200];
 extern int mp_gds[200][200];
@@ -18,6 +18,7 @@ class ROBOT
 public:
     int id,x,y;
     bool gds,status;// gds 0/1:手上有无货物，status 0/1:是否能动
+    stack<int>op_sta;queue<int>op;queue<node>q;
     void take_action()
     {
         int pre_action=get_pre_action();
@@ -32,7 +33,7 @@ public:
     }
 
     int get_berth(){return id;}//目标港口是和自己id相同的港口
-    bool in_berth(int id)
+    bool in_berth(int id,int x,int y)
     {
         if(x<berth[id].x||y<berth[id].y)return 0;
         if(x>=berth[id].x+4||y>=berth[id].y+4)return 0;
@@ -41,7 +42,8 @@ public:
     int get_pre_action()
     {
         if(!status)return -1;
-        if(!in_berth(get_berth()))
+        if(!op.empty())return -1;
+        if(!in_berth(get_berth(),x,y))
         {
             if(mp_gds[y][x]&&!gds)
             {
@@ -58,15 +60,14 @@ public:
         }
     }
     int man_dis(int x,int y,int xx,int yy) {return abs(x-xx)+abs(y-yy);}
-    stack<int>op_sta;queue<int>op;queue<node>q;
     void get_queue()
     {//route数组表示地图上某点按route走即可到港口
-        int ber=mp_ber[y][x];if(ber==-1)return;
+        int ber=get_berth();if(ber==-1)return;
         Gds gds=berth[ber].get_gds();if(gds.x==-1)return;
 
         while(!op_sta.empty())op_sta.pop();
         while(!op.empty())op.pop();
-        while(mp[gds.y][gds.x]!='B')
+        while(!in_berth(ber,gds.x,gds.y))
         {
             int action=berth[ber].route[gds.y][gds.x];
             if(action==-1)return;
@@ -104,7 +105,7 @@ public:
             return res;
         }
         //以下是没操作序列的情况
-        if(in_berth(get_berth())) {//如果当前在港口（则当前手上必然是空的）
+        if(in_berth(get_berth(),x,y)) {//如果当前在港口（则当前手上必然是空的）
             get_queue();
             if(op.empty())//目前港口所在的区域没有物体能拿，就休息一会儿
                 return -1;
