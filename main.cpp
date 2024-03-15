@@ -73,7 +73,7 @@ void Input()
     for(int i=0;i<boat_num;i++)
     {
         boat[i].id=i,boat[i].t0=t0;
-        scanf("%d%d\n", &boat[i].status, &boat[i].pos); //当前船
+        scanf("%d%d\n", &boat[i].status, &boat[i].tar); //当前船
     }
     char okk[100];
     scanf("%s",okk);

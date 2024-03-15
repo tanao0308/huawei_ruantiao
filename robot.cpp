@@ -55,7 +55,12 @@ public:
         }
         else
         {
-            if(gds){gds=0; return 1;}
+            if(gds)
+            {
+                gds=0;
+                berth[get_berth()].gds_num++;
+                return 1;
+            }
             else return -1;
         }
     }

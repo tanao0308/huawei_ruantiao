@@ -35,10 +35,11 @@ struct Gds { //每个货物如未被拿到则1000帧后消失
 };
 struct Berth
 {
-    int x;
-    int y;
+    int x,y;
     int transport_time;
     int loading_speed;
+    int gds_num;
+    queue<int>q_boat;
     Berth(){}
     Berth(int x, int y, int transport_time, int loading_speed) {
         this -> x = x;
