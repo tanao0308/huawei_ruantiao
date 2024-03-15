@@ -30,10 +30,18 @@ public:
         if(action>=0&&action<4)
             printf("move %d %d\n",id,action);
     }
+
+    int get_berth(){return id;}//目标港口是和自己id相同的港口
+    bool in_berth(int id)
+    {
+        if(x<berth[id].x||y<berth[id].y)return 0;
+        if(x>=berth[id].x+4||y>=berth[id].y+4)return 0;
+        return 1;
+    }
     int get_pre_action()
     {
         if(!status)return -1;
-        if(mp[y][x]!='B')
+        if(!in_berth(get_berth()))
         {
             if(mp_gds[y][x]&&!gds)
             {
@@ -41,36 +49,18 @@ public:
                 gds=1;
                 return 0;
             }
-            else
-                return -1;
+            else return -1;
         }
         else
         {
-            if(gds)
-            {
-                gds=0;
-                return 1;
-            }
-            else
-                return -1;
+            if(gds){gds=0; return 1;}
+            else return -1;
         }
     }
-
-    bool walkable(int x,int y)
-    {
-        if(x<0||y<0||x>=n||y>=n)return 0;
-        if(mp[y][x]!='.'&&mp[y][x]!='B')return 0;
-        return 1;
-    }
-    int man_dis(int x,int y,int xx,int yy)
-    {
-        return abs(x-xx)+abs(y-yy);
-    }
+    int man_dis(int x,int y,int xx,int yy) {return abs(x-xx)+abs(y-yy);}
     stack<int>op_sta;queue<int>op;queue<node>q;
-    // int pre[1][1],r=0;//9=2*r+1
     void get_queue()
     {//route数组表示地图上某点按route走即可到港口
-        // return;
         int ber=mp_ber[y][x];if(ber==-1)return;
         Gds gds=berth[ber].get_gds();if(gds.x==-1)return;
 
@@ -79,6 +69,7 @@ public:
         while(mp[gds.y][gds.x]!='B')
         {
             int action=berth[ber].route[gds.y][gds.x];
+            if(action==-1)return;
             op_sta.push(action^1);
             gds.x+=dx[action];
             gds.y+=dy[action];
@@ -99,25 +90,24 @@ public:
             op_sta.pop();
         }
     }
-    int rand_walk()
+    bool walkable(int x,int y)
     {
-        for(int i=0;i<10;++i)
-        {
-            int j=rand()%4;
-            if(walkable(x+dx[j],y+dy[j]))
-                return j;
-        }
-        return -1;
+        if(x<0||y<0||x>=n||y>=n)return 0;
+        if(mp[y][x]!='.'&&mp[y][x]!='B')return 0;
+        return 1;
     }
     int get_action()
     {
-        if(!gds)
-        {
-            if(op.empty()&&mp[y][x]=='B')
-                get_queue();
-
-            if(op.empty())
-                return rand_walk();
+        if(!op.empty()) {//有操作序列那么按操作序列做
+            int res=op.front();
+            op.pop();
+            return res;
+        }
+        //以下是没操作序列的情况
+        if(in_berth(get_berth())) {//如果当前在港口（则当前手上必然是空的）
+            get_queue();
+            if(op.empty())//目前港口所在的区域没有物体能拿，就休息一会儿
+                return -1;
             else
             {
                 int res=op.front();
@@ -125,10 +115,10 @@ public:
                 return res;
             }
         }
-        else
-        {
-            if(mp_ber[y][x]==-1)return -1;
-            return berth[mp_ber[y][x]].route[y][x];
+        else {//如果当前不在港口且没有操作队列，那就要返回港口，无论手上有没有东西
+            int ber=get_berth();
+            // if(berth[ber].route[y][x]!=-1)while(1);
+            return berth[ber].route[y][x];
         }
     }
 };

@@ -20,7 +20,7 @@ struct node {
     bool walkable()
     {
         if(x<0||y<0||x>=n||y>=n)return 0;
-        if(mp[y][x]!='.'&&mp[y][x]!='B')return 0;
+        if(mp[y][x]!='.'&&mp[y][x]!='B'&&mp[y][x]!='A')return 0;
         return 1;
     }
 };
