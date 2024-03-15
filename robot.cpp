@@ -71,10 +71,10 @@ public:
     // int pre[1][1],r=0;//9=2*r+1
     void get_queue()
     {
-        int ber=mp_ber[y][x];
-        if(ber==-1)return;
-        Gds gds=berth[ber].get_gds();
-        if(gds.x==-1)return;
+        return;
+        int ber=mp_ber[y][x];if(ber==-1)return;
+        Gds gds=berth[ber].get_gds();if(gds.x==-1)return;
+
         while(!op_sta.empty())op_sta.pop();
         while(!op.empty())op.pop();
         while(mp[gds.y][gds.x]!='B')
@@ -162,6 +162,7 @@ public:
         }
         else
         {
+            if(mp_ber[y][x]==-1)return -1;
             return berth[mp_ber[y][x]].route[y][x];
             // return route[y][x];
         }

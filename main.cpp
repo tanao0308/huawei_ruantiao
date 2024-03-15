@@ -86,6 +86,7 @@ void Input()
     {
         int x,y,v;
         scanf("%d%d%d",&y,&x,&v); //新增货物的位置和价值
+        if(mp_ber[y][x]==-1)continue;
         berth[mp_ber[y][x]].q.push((Gds){x,y,id,v});
         mp_gds[y][x]=v;
     }
