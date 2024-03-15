@@ -1,3 +1,4 @@
 .vscode
-.zip
+*.zip
 C++/build
+WindowsReleasev1.1/replay
