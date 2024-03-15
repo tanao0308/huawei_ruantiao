@@ -19,6 +19,23 @@ Berth berth[10];
 ROBOT robot[10];
 BOAT boat[5];
 
+
+void get_mp_ber()
+{
+    for(int i=0;i<n;++i)
+        for(int j=0;j<n;++j)
+        {
+            int b0=-1;
+            for(int b=0;b<berth_num;++b)
+            {
+                if(berth[b].dis[i][j]>=1e9)continue;
+                if(b0==-1||berth[b].dis[i][j]<berth[b0].dis[i][j])
+                    b0=b;
+            }
+            mp_ber[i][j]=b0;
+            // mp_ber[i][j]=rand()%10;
+        }
+}
 void Init()
 {
     for(int i=0;i<n;i++)
@@ -38,18 +55,7 @@ void Init()
 
     for(int i=0;i<berth_num;++i)
         berth[i].get_route();
-    for(int i=0;i<n;++i)
-        for(int j=0;j<n;++j)
-        {
-            int b0=-1;
-            for(int b=0;b<berth_num;++b)
-            {
-                if(berth[b].dis[i][j]==-1)continue;
-                if(b0==-1||berth[b].dis[i][j]<berth[b0].dis[i][j])
-                    b0=b;
-            }
-            mp_ber[i][j]=b0;
-        }
+    get_mp_ber();
 }
 void Input()
 {

@@ -53,7 +53,7 @@ struct Berth
     void get_route()
     {
         queue<node>q;
-        memset(dis,-1,sizeof dis);
+        memset(dis,0x3f,sizeof dis);
         memset(route,-1,sizeof route);
         for(int i=0;i<4;++i)
             for(int j=0;j<4;++j)
