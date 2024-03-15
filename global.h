@@ -10,7 +10,7 @@ extern const int robot_num;
 extern const int boat_num;
 extern const int berth_num;
 extern const int dx[4],dy[4];
-extern int id,money,boat_capacity;
+extern int t0,money,boat_capacity;
 extern char mp[200][200];
 extern int mp_gds[200][200];
 extern int mp_ber[200][200];
@@ -26,6 +26,12 @@ struct node {
 };
 struct Gds { //每个货物如未被拿到则1000帧后消失
     int x,y,t,v,d;//位置、生成时间、价值、离最近港口距离
+    bool operator<(const Gds b)const {
+        return (double)v/d<(double)b.v/b.d;
+    }
+    bool reachable(int t0)const {
+        return t+1000-t0>d;
+    }
 };
 struct Berth
 {
@@ -69,17 +75,12 @@ struct Berth
         }
     }
 
-    queue<Gds>q;
-    void update(int t)
+    priority_queue<Gds>q;
+    Gds get_gds(int t0)
     {
-        while(!q.empty()&&t-q.front().t>1000-300)//50为参数
-            q.pop();
-    }
-    Gds get_gds()
-    {
+        while(!q.empty()&&!q.top().reachable(t0))q.pop();
         if(q.empty())return (Gds){-1,-1,-1,-1,-1};
-        Gds gds=q.front();
-        q.pop();
+        Gds gds=q.top();q.pop();
         return gds;
     }
 };

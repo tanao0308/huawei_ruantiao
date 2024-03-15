@@ -8,7 +8,7 @@ extern const int robot_num;
 extern const int boat_num;
 extern const int berth_num;
 extern const int dx[4],dy[4];
-extern int id,money,boat_capacity;
+extern int t0,money,boat_capacity;
 extern char mp[200][200];
 extern int mp_gds[200][200];
 extern Berth berth[10];
@@ -16,7 +16,7 @@ extern Berth berth[10];
 class ROBOT
 {
 public:
-    int id,x,y;
+    int id,t0,x,y;
     bool gds,status;// gds 0/1:手上有无货物，status 0/1:是否能动
     stack<int>op_sta;queue<int>op;queue<node>q;
     void take_action()
@@ -63,7 +63,7 @@ public:
     void get_queue()
     {//route数组表示地图上某点按route走即可到港口
         int ber=get_berth();if(ber==-1)return;
-        Gds gds=berth[ber].get_gds();if(gds.x==-1)return;
+        Gds gds=berth[ber].get_gds(t0);if(gds.x==-1)return;
 
         while(!op_sta.empty())op_sta.pop();
         while(!op.empty())op.pop();

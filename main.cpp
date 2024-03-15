@@ -10,7 +10,7 @@ const int robot_num = 10;
 const int boat_num = 5;
 const int berth_num = 10;
 const int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1};
-int id,money,boat_capacity;
+int t0,money,boat_capacity;
 char mp[200][200];
 int mp_gds[200][200];
 int mp_ber[200][200];
@@ -25,6 +25,7 @@ void Init()
         scanf("%s",mp[i]);
     for(int i=0;i<berth_num;i++)
     {
+        int id;
         scanf("%d",&id);
         scanf("%d%d%d%d",&berth[id].y,&berth[id].x,&berth[id].transport_time,&berth[id].loading_speed);
     }
@@ -52,10 +53,7 @@ void Init()
 }
 void Input()
 {
-    scanf("%d%d",&id,&money); //当前帧编号，当前钱总数
-
-    for(int i=0;i<berth_num;++i)
-        berth[i].update(id);
+    scanf("%d%d",&t0,&money); //当前帧编号，当前钱总数
 
     int gds_num;
     scanf("%d",&gds_num); //当前新增货物总数
@@ -64,17 +62,17 @@ void Input()
         int x,y,v;
         scanf("%d%d%d",&y,&x,&v); //新增货物的位置和价值
         int ber=mp_ber[y][x];if(ber==-1)continue;
-        berth[ber].q.push((Gds){x,y,id,v,berth[ber].dis[y][x]});
+        berth[ber].q.push((Gds){x,y,t0,v,berth[ber].dis[y][x]});
         mp_gds[y][x]=v;
     }
     for(int i=0;i<robot_num;i++)
     {
-        robot[i].id=i;
+        robot[i].id=i,robot[i].t0=t0;
         scanf("%d%d%d%d",&robot[i].gds,&robot[i].y,&robot[i].x,&robot[i].status); //当前机器人是否拿着货物、位置、状态
     }
     for(int i=0;i<boat_num;i++)
     {
-        boat[i].id=i;
+        boat[i].id=i,boat[i].t0=t0;
         scanf("%d%d\n", &boat[i].status, &boat[i].pos); //当前船
     }
     char okk[100];

@@ -8,7 +8,7 @@ extern const int robot_num;
 extern const int boat_num;
 extern const int berth_num;
 extern const int dx[4],dy[4];
-extern int id,money,boat_capacity;
+extern int t0,money,boat_capacity;
 extern char mp[200][200];
 extern int mp_gds[200][200];
 extern Berth berth[10];
@@ -16,7 +16,7 @@ extern Berth berth[10];
 class BOAT
 {
 public:
-    int id,pos,status;
+    int id,t0,pos,status;
     int t;
     void take_action()
     {
