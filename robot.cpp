@@ -11,7 +11,6 @@ extern const int dx[4],dy[4];;
 extern int id,money,boat_capacity;
 extern char mp[200][200];
 extern int mp_gds[200][200];
-extern int route[200][200];
 extern Berth berth[10];
 
 class ROBOT
@@ -70,8 +69,8 @@ public:
     stack<int>op_sta;queue<int>op;queue<node>q;
     // int pre[1][1],r=0;//9=2*r+1
     void get_queue()
-    {
-        return;
+    {//route数组表示地图上某点按route走即可到港口
+        // return;
         int ber=mp_ber[y][x];if(ber==-1)return;
         Gds gds=berth[ber].get_gds();if(gds.x==-1)return;
 
@@ -80,59 +79,25 @@ public:
         while(mp[gds.y][gds.x]!='B')
         {
             int action=berth[ber].route[gds.y][gds.x];
-            op_sta.push(action);
-            gds.x-=dx[action];
-            gds.y-=dy[action];
+            op_sta.push(action^1);
+            gds.x+=dx[action];
+            gds.y+=dy[action];
         }
         while(gds.x!=x||gds.y!=y)
-            for(int action=0;action<4;++action)
+        {
+            int action=rand()%4;
+            Gds gds2=(Gds){gds.x+dx[action],gds.y+dy[action],-1,-1};
+            if(man_dis(gds2.x,gds2.y,x,y)<man_dis(gds.x,gds.y,x,y))
             {
-                Gds gds2=(Gds){gds.x-dx[action],gds.y-dy[action],-1,-1};
-                if(man_dis(gds2.x,gds2.y,x,y)>man_dis(gds.x,gds.y,x,y))
-                {
-                    op_sta.push(action);
-                    gds=gds2;
-                }
+                op_sta.push(action^1);
+                gds=gds2;
             }
-        while(!op_sta.empty())
-        {
-            op.push(op_sta.top());
-            op_sta.pop();
-        }
-
-        /*
-        while(!q.empty())q.pop();
-        q.push((node){x,y,0});
-        memset(pre,-1,sizeof pre);
-        node tar={-1,-1,-1};
-        while(!q.empty())
-        {
-            node u=q.front();q.pop();
-            if(mp_gds[u.y][u.x]){tar=u;break;}
-            for(int i=0;i<4;++i)
-            {
-                node v=(node){u.x+dx[i],u.y+dy[i],u.s+1};
-                if(v.s>r||!walkable(v.x,v.y)||pre[v.y-(y-r)][v.x-(x-r)]!=-1)
-                    continue;
-                q.push(v);
-                pre[v.y-(y-r)][v.x-(x-r)]=i;
-            }
-        }
-        if(tar.s==-1)return;
-        stack<int>op_sta;
-        while(tar.x!=x||tar.y!=y)
-        {
-            int action=pre[tar.y-(y-r)][tar.x-(x-r)];
-            op_sta.push(action);
-            tar.x-=dx[action];
-            tar.y-=dy[action];
         }
         while(!op_sta.empty())
         {
             op.push(op_sta.top());
             op_sta.pop();
         }
-        */
     }
     int rand_walk()
     {
@@ -164,7 +129,6 @@ public:
         {
             if(mp_ber[y][x]==-1)return -1;
             return berth[mp_ber[y][x]].route[y][x];
-            // return route[y][x];
         }
     }
 };

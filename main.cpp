@@ -13,35 +13,12 @@ const int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1};
 int id,money,boat_capacity;
 char mp[200][200];
 int mp_gds[200][200];
-int route[200][200];
 int mp_ber[200][200];
 Berth berth[10];
 
 ROBOT robot[10];
 BOAT boat[5];
 
-
-void get_route()
-{
-    queue<node>q;
-    memset(route,-1,sizeof route);
-    for(int i=0;i<berth_num;++i)
-    {
-        route[berth[i].y+1][berth[i].x+1]=4;
-        q.push((node){berth[i].x+1,berth[i].y+1,0});
-    }
-    while(!q.empty())
-    {
-        node u=q.front();q.pop();
-        for(int i=0;i<4;++i)
-        {
-            node v=(node){u.x+dx[i],u.y+dy[i],u.s+1};
-            if(!v.walkable()||route[v.y][v.x]!=-1)continue;
-            route[v.y][v.x]=i^1;
-            q.push(v);
-        }
-    }
-}
 void Init()
 {
     for(int i=0;i<n;i++)
@@ -57,7 +34,7 @@ void Init()
     printf("OK\n");
     fflush(stdout);
 
-    get_route();
+
     for(int i=0;i<berth_num;++i)
         berth[i].get_route();
     for(int i=0;i<n;++i)

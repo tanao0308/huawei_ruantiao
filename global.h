@@ -13,7 +13,6 @@ extern const int dx[4],dy[4];
 extern int id,money,boat_capacity;
 extern char mp[200][200];
 extern int mp_gds[200][200];
-extern int route[200][200];
 extern int mp_ber[200][200];
 
 struct node {
@@ -73,7 +72,7 @@ struct Berth
     queue<Gds>q;
     void update(int t)
     {
-        while(!q.empty()&&t-q.front().t>1000-50)//50为参数
+        while(!q.empty()&&t-q.front().t>1000-500)//50为参数
             q.pop();
     }
     Gds get_gds()
