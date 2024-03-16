@@ -20,7 +20,43 @@ ROBOT robot[10];
 BOAT boat[5];
 
 
-void get_mp_ber(int k=10)
+void get_mp_ber1()
+{
+    memset(mp_ber,-1,sizeof mp_ber);
+    int sum[10]={0};
+    int dis[10]={0};
+    for(int i=0;i<10;++i)dis[i]=-1;
+    queue<node>q[10];
+    for(int b=0;b<10;++b)
+        for(int i=0;i<4;++i)
+            for(int j=0;j<4;++j)
+                q[b].push((node){berth[b].x+j,berth[b].y+i,0});
+    for(int t=0;t<50000;++t)
+    {
+        int b=0;
+        for(int i=1;i<10;++i)
+            if(sum[b]>sum[i])
+                b=i;
+
+        if(q[b].empty()){sum[b]=1e9;continue;}
+        node u=q[b].front();q[b].pop();
+        if(mp_ber[u.y][u.x]==-1)
+        {
+            mp_ber[u.y][u.x]=b;
+            sum[b]+=berth[b].dis[u.y][u.x];
+        }
+        else continue;
+        for(int i=0;i<4;++i)
+        {
+            node v=(node){u.x+dx[i],u.y+dy[i],u.s+1};
+            if(!v.walkable()||mp_ber[v.y][v.x]!=-1)continue;
+            q[b].push(v);
+        }
+    }
+    for(int b=0;b<10;++b)
+        while(!q[b].empty())q[b].pop();
+}
+void get_mp_ber2(int k=1)
 {
     memset(mp_ber,-1,sizeof mp_ber);
     int sum[10]={0};
@@ -40,35 +76,39 @@ void get_mp_ber(int k=10)
                     mp_ber[i][j]=b;
                 }
         dis[b]+=k;
-        // if(!flag)break;
     }
-
-    // cerr<<endl;
-    // for(int i=0;i<n;++i)
-    // {
-    //     for(int j=0;j<n;++j)
-    //         if(mp_ber[i][j]==-1)cerr<<"X";
-    //         else cerr<<mp_ber[i][j];
-    //     cerr<<endl;
-    // }
-    // while(1);
 }
-// void get_mp_ber()
-// {
-//     for(int i=0;i<n;++i)
-//         for(int j=0;j<n;++j)
-//         {
-//             int b0=-1;
-//             for(int b=0;b<berth_num;++b)
-//             {
-//                 if(berth[b].dis[i][j]>=1e9)continue;
-//                 if(b0==-1||berth[b].dis[i][j]<berth[b0].dis[i][j])
-//                     b0=b;
-//             }
-//             mp_ber[i][j]=b0;
-//             // mp_ber[i][j]=rand()%10;
-//         }
-// }
+void get_mp_ber3()
+{
+    for(int i=0;i<n;++i)
+        for(int j=0;j<n;++j)
+        {
+            int b0=-1;
+            for(int b=0;b<berth_num;++b)
+            {
+                if(berth[b].dis[i][j]>=1e9)continue;
+                if(b0==-1||berth[b].dis[i][j]<berth[b0].dis[i][j])
+                    b0=b;
+            }
+            mp_ber[i][j]=b0;
+            // mp_ber[i][j]=rand()%10;
+        }
+}
+void print_map()
+{
+    int watch=4;
+    cerr<<endl;
+    for(int i=0;i<n;++i)
+    {
+        for(int j=0;j<n;++j)
+            if(mp_ber[i][j]==-1)cerr<<" X";
+            else if(mp_ber[i][j]==watch)cerr<<" "<<'O';
+            else cerr<<" .";
+            // else cerr<<" .";
+        cerr<<endl;
+    }
+    while(1);
+}
 void Init()
 {
     for(int i=0;i<n;i++)
@@ -88,7 +128,8 @@ void Init()
 
     for(int i=0;i<berth_num;++i)
         berth[i].get_route();
-    get_mp_ber();
+    get_mp_ber2();
+    // print_map();
 }
 void Input()
 {
