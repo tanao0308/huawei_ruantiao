@@ -52,12 +52,12 @@ public:
         else//不然，就是在港口
         {
             if(t0==15000-berth[tar].transport_time-2)
-            {
+            { //如果船在最后能出海的时间，那就让它出海
                 tar=-1;
                 return tar+1;
             }
             if(t0<15000-berth[tar].transport_time-2&&t0>=15000-3*berth[tar].transport_time-boat_capacity/berth[tar].loading_speed)
-            {
+            { //如果船在接近最后时段还在港口，那就等到最后再出海
                 return -1;
             }
 
@@ -70,7 +70,11 @@ public:
             }
             else
             {
-                if(gds_num+berth[tar].loading_speed>boat_capacity)cerr<<"boat capacity is too small"<<endl;
+                if(gds_num+berth[tar].loading_speed>boat_capacity)
+                {
+                    cerr<<"boat capacity is too small"<<endl;
+                    // while(1);
+                }
                 if(berth[tar].gds_num-berth[tar].loading_speed<0)cerr<<"goods is too few"<<endl;
                 berth[tar].q_boat.pop();
                 tar=-1;

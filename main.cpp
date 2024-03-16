@@ -20,67 +20,11 @@ RobotData robot_data[10];
 ROBOT robot[10];
 BOAT boat[5];
 
-
-void get_mp_ber1()
+int select_k()
 {
-    memset(mp_ber,-1,sizeof mp_ber);
-    int sum[10]={0};
-    int dis[10]={0};
-    for(int i=0;i<10;++i)dis[i]=-1;
-    queue<node>q[10];
-    for(int b=0;b<10;++b)
-        for(int i=0;i<4;++i)
-            for(int j=0;j<4;++j)
-                q[b].push((node){berth[b].x+j,berth[b].y+i,0});
-    for(int t=0;t<50000;++t)
-    {
-        int b=0;
-        for(int i=1;i<10;++i)
-            if(sum[b]>sum[i])
-                b=i;
-
-        if(q[b].empty()){sum[b]=1e9;continue;}
-        node u=q[b].front();q[b].pop();
-        if(mp_ber[u.y][u.x]==-1)
-        {
-            mp_ber[u.y][u.x]=b;
-            sum[b]+=berth[b].dis[u.y][u.x];
-        }
-        else continue;
-        for(int i=0;i<4;++i)
-        {
-            node v=(node){u.x+dx[i],u.y+dy[i],u.s+1};
-            if(!v.walkable()||mp_ber[v.y][v.x]!=-1)continue;
-            q[b].push(v);
-        }
-    }
-    for(int b=0;b<10;++b)
-        while(!q[b].empty())q[b].pop();
+    return 4;
 }
-void get_mp_ber2(int k=1)
-{
-    memset(mp_ber,-1,sizeof mp_ber);
-    int sum[10]={0};
-    int dis[10]={0};
-    for(int t=0;t<5000;++t)
-    {
-        int b=0;bool flag=0;
-        for(int i=1;i<10;++i)
-            if(sum[b]>sum[i])
-                b=i;
-        for(int i=0;i<n;++i)
-            for(int j=0;j<n;++j)
-                if(berth[b].dis[i][j]>dis[b]&&berth[b].dis[i][j]<=dis[b]+k&&mp_ber[i][j]==-1)
-                {
-                    flag=1;
-                    sum[b]+=berth[b].dis[i][j];
-                    // sum[b]++;
-                    mp_ber[i][j]=b;
-                }
-        dis[b]+=k;
-    }
-}
-void get_mp_ber3()
+void get_mp_ber()
 {
     memset(mp_ber,-1,sizeof mp_ber);
     int sum_dis[11]={0};
@@ -98,12 +42,24 @@ void get_mp_ber3()
             sum_dis[b0]+=berth[b0].dis[i][j];
             sum_dis[10]+=berth[b0].dis[i][j];
         }
-    double k=0.4;//0.3map1:19.5w 0.4map1:20w 0.5map1:19.1w 0.6map1:19w
+    int a[10]={0};for(int i=0;i<10;++i)a[i]=sum_dis[i];
+    sort(a,a+10);int k=select_k();
     bool use_berth[10]={0};
     for(int i=0;i<berth_num;++i)
-        if(sum_dis[i]>0.1*sum_dis[10]*k) //表示如果管辖范围大于某个值则启用这个港口
+        if(sum_dis[i]>=a[k]) //表示取前10-k大的港口
             use_berth[i]=1;
+    // 以下为弃置方案
+    // double k=0.2;//0.3map1:19.5w 0.4map1:20w 0.5map1:19.1w 0.6map1:19w
+    // bool use_berth[10]={0};
+    // for(int i=0;i<berth_num;++i)
+    //     if(sum_dis[i]>0.1*sum_dis[10]*k) //表示如果管辖范围大于某个值则启用这个港口
+    //         use_berth[i]=1;
+
+    cerr<<"-------------------------------"<<endl;
+    cerr<<"sum dis="<<sum_dis[10]<<endl;
+    cerr<<a[k]<<"||"<<166666<<endl;
     for(int i=0;i<=berth_num;++i)cerr<<sum_dis[i]<<" ";cerr<<endl;
+    // while(1);
     
     //现在已知港口的启用情况，接下来给港口分配管辖区域和机器人数量
     memset(sum_dis,0,sizeof sum_dis);
@@ -122,8 +78,11 @@ void get_mp_ber3()
             sum_dis[b0]+=berth[b0].dis[i][j];
             sum_dis[10]+=berth[b0].dis[i][j];
         }
-    // for(int i=0;i<berth_num;++i)cerr<<use_berth[i]<<" ";cerr<<endl;
-    // for(int i=0;i<berth_num;++i)cerr<<sum_dis[i]<<" ";cerr<<endl;
+
+    cerr<<"-------------------------------"<<endl;
+    for(int i=0;i<berth_num;++i)cerr<<use_berth[i]<<" ";cerr<<endl;
+    for(int i=0;i<berth_num;++i)cerr<<sum_dis[i]<<" ";cerr<<endl;
+    // while(1);
     
 
     int p=0;//当前准备分配的机器人id
@@ -233,7 +192,7 @@ int main()
         Input();
         if(zhen==1)
         {
-            get_mp_ber3();
+            get_mp_ber();
             // print_map();
         }
         Action();
