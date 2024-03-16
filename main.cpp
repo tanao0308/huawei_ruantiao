@@ -82,6 +82,8 @@ void get_mp_ber2(int k=1)
 }
 void get_mp_ber3()
 {
+    memset(mp_ber,-1,sizeof mp_ber);
+    int sum_dis[11]={0};
     for(int i=0;i<n;++i)
         for(int j=0;j<n;++j)
         {
@@ -92,13 +94,65 @@ void get_mp_ber3()
                 if(b0==-1||berth[b].dis[i][j]<berth[b0].dis[i][j])
                     b0=b;
             }
-            mp_ber[i][j]=b0;
-            // mp_ber[i][j]=rand()%10;
+            if(b0==-1)continue;
+            sum_dis[b0]+=berth[b0].dis[i][j];
+            sum_dis[10]+=berth[b0].dis[i][j];
         }
+    double k=0.4;//0.3map1:19.5w 0.4map1:20w 0.5map1:19.1w 0.6map1:19w
+    bool use_berth[10]={0};
+    for(int i=0;i<berth_num;++i)
+        if(sum_dis[i]>0.1*sum_dis[10]*k) //表示如果管辖范围大于某个值则启用这个港口
+            use_berth[i]=1;
+    for(int i=0;i<=berth_num;++i)cerr<<sum_dis[i]<<" ";cerr<<endl;
+    
+    //现在已知港口的启用情况，接下来给港口分配管辖区域和机器人数量
+    memset(sum_dis,0,sizeof sum_dis);
+    for(int i=0;i<n;++i)
+        for(int j=0;j<n;++j)
+        {
+            int b0=-1;
+            for(int b=0;b<berth_num;++b)if(use_berth[b])
+            {
+                if(berth[b].dis[i][j]>=1e9)continue;
+                if(b0==-1||berth[b].dis[i][j]<berth[b0].dis[i][j])
+                    b0=b;
+            }
+            if(b0==-1)continue;
+            mp_ber[i][j]=b0;
+            sum_dis[b0]+=berth[b0].dis[i][j];
+            sum_dis[10]+=berth[b0].dis[i][j];
+        }
+    // for(int i=0;i<berth_num;++i)cerr<<use_berth[i]<<" ";cerr<<endl;
+    // for(int i=0;i<berth_num;++i)cerr<<sum_dis[i]<<" ";cerr<<endl;
+    
+
+    int p=0;//当前准备分配的机器人id
+    queue<int>use_robot;int work_robot=0;
+    for(int i=0;i<robot_num;++i)
+        if(mp_ber[robot[i].y][robot[i].x]!=-1)
+            use_robot.push(i),work_robot++;
+    while(!use_robot.empty())
+    {
+        int b0=-1;
+        for(int b=0;b<berth_num;++b)if(use_berth[b])
+            if(b0==-1||sum_dis[b0]<sum_dis[b])
+                b0=b;
+        if(b0==-1)continue;
+        sum_dis[b0]-=(1.0/work_robot)*sum_dis[10];
+        robot[use_robot.front()].berth_id=b0;
+
+        cerr<<use_robot.front()<<" ";
+        use_robot.pop();
+    }cerr<<endl;
+    // while(1);
+
+    // for(int i=0;i<robot_num;++i)
+    //     cerr<<robot[i].get_berth()<<" ";cerr<<endl;
+    // while(1);
 }
 void print_map()
 {
-    int watch=7;
+    int watch=9;
     cerr<<endl;
     for(int i=0;i<n;++i)
     {
@@ -131,11 +185,8 @@ void Init()
     printf("OK\n");
     fflush(stdout);
 
-
     for(int i=0;i<berth_num;++i)
         berth[i].get_route();
-    get_mp_ber2();
-    print_map();
 }
 void Input()
 {
@@ -180,10 +231,12 @@ int main()
     for(int zhen=1;zhen<=15000;zhen++)
     {
         Input();
-        // if(zhen<=1000)
+        if(zhen==1)
         {
-            Action();
+            get_mp_ber3();
+            // print_map();
         }
+        Action();
         puts("OK");
         fflush(stdout);
     }

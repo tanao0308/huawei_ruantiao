@@ -19,6 +19,7 @@ public:
     int id,t0,x,y;
     bool gds,status;// gds 0/1:手上有无货物，status 0/1:是否能动
     stack<int>op_sta;deque<int>op;queue<node>q;
+    int berth_id;
     void take_action()
     {
         int pre_action=get_pre_action();
@@ -32,7 +33,7 @@ public:
             printf("move %d %d\n",id,action);
     }
 
-    int get_berth(){return id;}//目标港口是和自己id相同的港口
+    int get_berth(){return berth_id;}//返回目标港口
     bool in_berth(int id,int x,int y)
     {
         if(x<berth[id].x||y<berth[id].y)return 0;
