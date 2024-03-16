@@ -10,7 +10,7 @@ extern const int berth_num;
 extern const int dx[4],dy[4];
 extern int t0,money,boat_capacity;
 extern char mp[200][200];
-extern int mp_gds[200][200];
+extern Gds exist_gds[200][200];
 extern Berth berth[10];
 
 class ROBOT
@@ -19,7 +19,6 @@ public:
     int id,t0,x,y;
     bool gds,status;// gds 0/1:手上有无货物，status 0/1:是否能动
     stack<int>op_sta;deque<int>op;queue<node>q;
-    int berth_id;
     void take_action()
     {
         int pre_action=get_pre_action();
@@ -33,7 +32,14 @@ public:
             printf("move %d %d\n",id,action);
     }
 
-    int get_berth(){return berth_id;}//返回目标港口
+    int get_berth()
+    {//找到离自己最近的港口
+        int b0=-1;
+        for(int b=0;b<10;++b)if(berth[b].dis[y][x]<1e9)
+            if(b0==-1||berth[b0].dis[y][x]>berth[b].dis[y][x])
+                b0=b;
+        return b0;
+    }
     bool in_berth(int id,int x,int y)
     {
         if(x<berth[id].x||y<berth[id].y)return 0;
@@ -46,9 +52,8 @@ public:
         if(!op.empty())return -1;
         if(!in_berth(get_berth(),x,y))
         {
-            if(mp_gds[y][x]&&!gds)
+            if(!gds)
             {
-                mp_gds[y][x]=0;
                 gds=1;
                 return 0;
             }
@@ -66,10 +71,24 @@ public:
         }
     }
     int man_dis(int x,int y,int xx,int yy) {return abs(x-xx)+abs(y-yy);}
+    Gds get_gds(int ber)
+    {
+        int val0=0,tx=-1,ty=-1;
+        for(int i=0;i<n;++i)
+            for(int j=0;j<n;++j)if(exist_gds[i][j].t&&berth[ber].dis[i][j]<1e9)
+            {
+                int val=(double)exist_gds[i][j].v/man_dis(x,y,j,i);
+                if(val>val0)val0=val,tx=j,ty=i;
+            }
+        if(tx==-1)return (Gds){-1,-1,-1,-1,-1};
+        Gds res=exist_gds[ty][tx];
+        exist_gds[ty][tx].t=0;
+        return res;
+    }
     void get_queue()
     {//route数组表示地图上某点按route走即可到港口
         int ber=get_berth();if(ber==-1)return;
-        Gds gds=berth[ber].get_gds(t0);if(gds.x==-1)return;
+        Gds gds=get_gds(ber);if(gds.x==-1)return;
 
         while(!op_sta.empty())op_sta.pop();
         while(!op.empty())op.pop_front();
@@ -143,13 +162,12 @@ public:
                 if(act==4)res=-1;
                 else op.push_front(act^1),res=act;
             }
-
             return res;
         }
         //以下是没操作序列的情况
         if(in_berth(get_berth(),x,y)) {//如果当前在港口（则当前手上必然是空的）
             get_queue();
-            if(op.empty())//目前港口所在的区域没有物体能拿，就休息一会儿
+            if(op.empty())//目前没有物体能拿，就休息一会儿
                 return -1;
             else
             {
@@ -168,7 +186,7 @@ public:
             }
         }
         else {//如果当前不在港口且没有操作队列，那就要返回港口，无论手上有没有东西
-            int ber=get_berth();
+            int ber=get_berth();if(ber==-1)return -1;
             int res=berth[ber].route[y][x];
             
             int act=check_coll();

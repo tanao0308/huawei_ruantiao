@@ -10,7 +10,6 @@ extern const int berth_num;
 extern const int dx[4],dy[4];
 extern int t0,money,boat_capacity;
 extern char mp[200][200];
-extern int mp_gds[200][200];
 extern Berth berth[10];
 
 class BOAT
