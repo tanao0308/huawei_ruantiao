@@ -51,6 +51,17 @@ public:
         }
         else//不然，就是在港口
         {
+            if(t0==15000-berth[tar].transport_time-2)
+            {
+                tar=-1;
+                return tar+1;
+            }
+            if(t0<15000-berth[tar].transport_time-2&&t0>=15000-3*berth[tar].transport_time-boat_capacity/berth[tar].loading_speed)
+            {
+                return -1;
+            }
+
+
             if(gds_num+berth[tar].loading_speed<=boat_capacity&&berth[tar].gds_num-berth[tar].loading_speed>=0)//在装货中
             {
                 gds_num+=berth[tar].loading_speed;
