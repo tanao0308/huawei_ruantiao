@@ -12,7 +12,6 @@ const int berth_num = 10;
 const int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1};
 int t0,money,boat_capacity;
 char mp[200][200];
-int mp_ber[200][200];
 Berth berth[10];
 Gds exist_gds[200][200];
 RobotData robot_data[10];
@@ -20,11 +19,6 @@ RobotData robot_data[10];
 ROBOT robot[10];
 BOAT boat[5];
 
-void get_mp_ber()
-{
-    int a[1]={0};
-    sort(a,a+1);
-}
 void Init()
 {
     for(int i=0;i<n;i++)
