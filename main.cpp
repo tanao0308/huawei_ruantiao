@@ -15,6 +15,7 @@ char mp[200][200];
 int mp_gds[200][200];
 int mp_ber[200][200];
 Berth berth[10];
+RobotData robot_data[10];
 
 ROBOT robot[10];
 BOAT boat[5];
@@ -73,6 +74,7 @@ void get_mp_ber2(int k=1)
                 {
                     flag=1;
                     sum[b]+=berth[b].dis[i][j];
+                    // sum[b]++;
                     mp_ber[i][j]=b;
                 }
         dis[b]+=k;
@@ -96,7 +98,7 @@ void get_mp_ber3()
 }
 void print_map()
 {
-    int watch=4;
+    int watch=7;
     cerr<<endl;
     for(int i=0;i<n;++i)
     {
@@ -113,6 +115,10 @@ void Init()
 {
     for(int i=0;i<n;i++)
         scanf("%s",mp[i]);
+    for(int i=0;i<n;++i)
+        for(int j=0;j<n;++j)
+            if(mp[i][j]=='A')
+                mp[i][j]='.';
     for(int i=0;i<berth_num;i++)
     {
         int id;
@@ -129,7 +135,7 @@ void Init()
     for(int i=0;i<berth_num;++i)
         berth[i].get_route();
     get_mp_ber2();
-    // print_map();
+    print_map();
 }
 void Input()
 {
@@ -149,6 +155,9 @@ void Input()
     {
         robot[i].id=i,robot[i].t0=t0;
         scanf("%d%d%d%d",&robot[i].gds,&robot[i].y,&robot[i].x,&robot[i].status); //当前机器人是否拿着货物、位置、状态
+        robot_data[i].x=robot[i].x,robot_data[i].y=robot[i].y;
+
+        // if(robot[i].status==0)while(1)cerr<<"collision!"<<endl;
     }
     for(int i=0;i<boat_num;i++)
     {

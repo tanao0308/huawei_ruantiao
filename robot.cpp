@@ -18,7 +18,7 @@ class ROBOT
 public:
     int id,t0,x,y;
     bool gds,status;// gds 0/1:手上有无货物，status 0/1:是否能动
-    stack<int>op_sta;queue<int>op;queue<node>q;
+    stack<int>op_sta;deque<int>op;queue<node>q;
     void take_action()
     {
         int pre_action=get_pre_action();
@@ -71,7 +71,7 @@ public:
         Gds gds=berth[ber].get_gds(t0);if(gds.x==-1)return;
 
         while(!op_sta.empty())op_sta.pop();
-        while(!op.empty())op.pop();
+        while(!op.empty())op.pop_front();
         while(!in_berth(ber,gds.x,gds.y))
         {
             int action=berth[ber].route[gds.y][gds.x];
@@ -92,7 +92,7 @@ public:
         }
         while(!op_sta.empty())
         {
-            op.push(op_sta.top());
+            op.push_back(op_sta.top());
             op_sta.pop();
         }
     }
@@ -102,11 +102,47 @@ public:
         if(mp[y][x]!='.'&&mp[y][x]!='B')return 0;
         return 1;
     }
+    int other_robot_dis(int x,int y)//需要避让就返回其他机器人离自己的最近值，否则返回inf
+    {
+        int dis=1e9;
+        for(int i=0;i<robot_num;++i)if(i!=id)
+        {
+            if(id>i)continue;
+            dis=min(dis,man_dis(x,y,robot_data[i].x,robot_data[i].y));
+        }
+        return dis;
+    }
+    int check_coll()//检查当前行动机器人是否会碰撞，如果会碰撞且需要避让，那么返回应进行的避让操作
+    {//一个机器人应当距离其他机器人两格及以上
+        // return -1;
+
+        if(other_robot_dis(x,y)>=3)return -1;
+        int randi[4]={0,1,2,3};random_shuffle(randi,randi+4);
+        for(int i=0;i<4;++i)
+        {
+            int act=randi[i];
+            // int act=i;
+            int xx=x+dx[act],yy=y+dy[act];
+            if(other_robot_dis(xx,yy)>=2&&walkable(xx,yy))
+                return act;
+        }
+        // while(1)cerr<<"check_coll()"<<endl;//按理来说不应该运行到这里
+        return 4;
+    }
     int get_action()
     {
         if(!op.empty()) {//有操作序列那么按操作序列做
             int res=op.front();
-            op.pop();
+            op.pop_front();
+
+            int act=check_coll();
+            if(act!=-1)
+            {
+                op.push_front(res);
+                if(act==4)res=-1;
+                else op.push_front(act^1),res=act;
+            }
+
             return res;
         }
         //以下是没操作序列的情况
@@ -117,14 +153,31 @@ public:
             else
             {
                 int res=op.front();
-                op.pop();
+                op.pop_front();
+
+                int act=check_coll();
+                if(act!=-1)
+                {
+                    op.push_front(res);
+                    if(act==4)res=-1;
+                    else op.push_front(act^1),res=act;
+                }
+
                 return res;
             }
         }
         else {//如果当前不在港口且没有操作队列，那就要返回港口，无论手上有没有东西
             int ber=get_berth();
-            // if(berth[ber].route[y][x]!=-1)while(1);
-            return berth[ber].route[y][x];
+            int res=berth[ber].route[y][x];
+            
+            int act=check_coll();
+            if(act!=-1)
+            {
+                res=act;
+                if(act==4)res=-1;
+            }
+
+            return res;
         }
     }
 };
