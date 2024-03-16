@@ -15,7 +15,6 @@ char mp[200][200];
 Berth berth[10];
 Gds exist_gds[200][200];
 RobotData robot_data[10];
-
 ROBOT robot[10];
 BOAT boat[5];
 
@@ -41,6 +40,8 @@ void Init()
 
     for(int i=0;i<berth_num;++i)
         berth[i].get_route();
+    for(int i=0;i<robot_num;++i)
+        robot[i].start_berth=-1;
 }
 void Input()
 {
@@ -80,6 +81,7 @@ void Action()
 {
     for(int i=0;i<robot_num;++i)
         robot[i].take_action();
+    // if(t0==1){cerr<<"here"<<endl;while(1);}
     for(int i=0;i<boat_num;++i)
         boat[i].take_action();
 }

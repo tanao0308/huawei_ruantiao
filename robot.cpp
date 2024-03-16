@@ -19,6 +19,7 @@ public:
     int id,t0,x,y;
     bool gds,status;// gds 0/1:手上有无货物，status 0/1:是否能动
     stack<int>op_sta;deque<int>op;queue<node>q;
+    bool is_start;int start_berth;
     void take_action()
     {
         int pre_action=get_pre_action();
@@ -34,6 +35,20 @@ public:
 
     int get_berth()
     {//找到离自己最近的港口
+        if(!is_start)
+        {
+            if(start_berth==-1)
+            {                
+                int a[10];for(int i=0;i<10;++i)a[i]=0;random_shuffle(a,a+10);
+                for(int i=0;i<10;++i)
+                    if(berth[a[i]].route[y][x]!=-1)
+                    {
+                        start_berth=a[i];
+                        break;
+                    }
+            }
+            return start_berth;
+        }
         int b0=-1;
         for(int b=0;b<10;++b)if(berth[b].dis[y][x]<1e9)
             if(b0==-1||berth[b0].dis[y][x]>berth[b].dis[y][x])
@@ -42,6 +57,7 @@ public:
     }
     bool in_berth(int id,int x,int y)
     {
+        if(id==-1)return 0;
         if(x<berth[id].x||y<berth[id].y)return 0;
         if(x>=berth[id].x+4||y>=berth[id].y+4)return 0;
         return 1;
@@ -50,7 +66,8 @@ public:
     {
         if(!status)return -1;
         if(!op.empty())return -1;
-        if(!in_berth(get_berth(),x,y))
+        int ber=get_berth();if(ber==-1)return -1;
+        if(!in_berth(ber,x,y))
         {
             if(!gds)
             {
@@ -64,7 +81,7 @@ public:
             if(gds)
             {
                 gds=0;
-                berth[get_berth()].gds_num++;
+                berth[ber].gds_num++;
                 return 1;
             }
             else return -1;
@@ -165,7 +182,9 @@ public:
             return res;
         }
         //以下是没操作序列的情况
-        if(in_berth(get_berth(),x,y)) {//如果当前在港口（则当前手上必然是空的）
+        int ber=get_berth();if(ber==-1)return -1;
+        if(in_berth(ber,x,y)) {//如果当前在港口（则当前手上必然是空的）
+            is_start=1;
             get_queue();
             if(op.empty())//目前没有物体能拿，就休息一会儿
                 return -1;
