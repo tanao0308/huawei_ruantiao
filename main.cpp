@@ -22,7 +22,8 @@ BOAT boat[5];
 
 int select_k()
 {
-    return 4;
+    // return 5;//期望来讲选5会比较优
+    return 1;
 }
 void get_mp_ber()
 {
@@ -86,22 +87,26 @@ void get_mp_ber()
     
 
     int p=0;//当前准备分配的机器人id
-    queue<int>use_robot;int work_robot=0;
+    bool workable[10]={0};int work_robot=0;//每个机器人是否可用，以及可用机器人的个数
     for(int i=0;i<robot_num;++i)
         if(mp_ber[robot[i].y][robot[i].x]!=-1)
-            use_robot.push(i),work_robot++;
-    while(!use_robot.empty())
+            workable[i]=1,work_robot++;
+    for(int tt=0;tt<100;++tt)
     {
         int b0=-1;
         for(int b=0;b<berth_num;++b)if(use_berth[b])
             if(b0==-1||sum_dis[b0]<sum_dis[b])
                 b0=b;
         if(b0==-1)continue;
+        //选出了当前需要分配机器人的港口
         sum_dis[b0]-=(1.0/work_robot)*sum_dis[10];
-        robot[use_robot.front()].berth_id=b0;
-
-        cerr<<use_robot.front()<<" ";
-        use_robot.pop();
+        for(int i=0;i<10;++i)
+            if(berth[b0].route[robot[i].y][robot[i].x]!=-1&&workable[i])
+            {//如果i号机器人有路径到b且没被选过
+                workable[i]=0;
+                robot[i].berth_id=b0;
+                break;
+            }
     }cerr<<endl;
     // while(1);
 
