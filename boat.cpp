@@ -25,19 +25,10 @@ public:
         else if(action!=-1)
             printf("ship %d %d\n",id,action-1);
     }
-    int get_target() {
-        int ber=-1;
-        for(int i=0;i<berth_num;++i)
-        {
-            if(!berth[i].q_boat.empty())
-                continue;
-            if(ber==-1||berth[ber].gds_num<berth[i].gds_num)
-                ber=i;
-        }
-        if(ber==-1)return -1;
-        berth[ber].q_boat.push(id);
-        return ber;
-        // return id*2+rand()%2;
+    int get_berth0() {
+        if(berth[id*2].transport_time>berth[id*2+1].transport_time)
+            return id*2;
+        else return id*2+1;
     }
     int get_action()
     {
@@ -45,40 +36,54 @@ public:
         if(tar==-1)//刚到虚拟点，去新目标
         {
             gds_num=0;
-            tar=get_target();
+            tar=get_berth0();
             return tar+1;
         }
-        else//不然，就是在港口
+        else if(tar==get_berth0())//如果在第一个港口
         {
             if(t0==15000-berth[tar].transport_time-2)
             { //如果船在最后能出海的时间，那就让它出海
                 tar=-1;
                 return tar+1;
             }
-            if(t0<15000-berth[tar].transport_time-2&&t0>=15000-3*berth[tar].transport_time-boat_capacity/berth[tar].loading_speed)
-            { //如果船在接近最后时段还在港口，那就等到最后再出海
-                return -1;
-            }
-
-
-            if(gds_num+berth[tar].loading_speed<=boat_capacity&&berth[tar].gds_num-berth[tar].loading_speed>=0)//在装货中
-            {
+            if(gds_num+berth[tar].loading_speed<=boat_capacity&&berth[tar].gds_num-berth[tar].loading_speed>=0)
+            { //如果船在装货中，则装货
                 gds_num+=berth[tar].loading_speed;
                 berth[tar].gds_num-=berth[tar].loading_speed;
                 return -1;
             }
-            else
-            {
-                if(gds_num+berth[tar].loading_speed>boat_capacity)
-                {
-                    cerr<<"boat capacity is too small"<<endl;
-                    // while(1);
-                }
-                if(berth[tar].gds_num-berth[tar].loading_speed<0)cerr<<"goods is too few"<<endl;
-                berth[tar].q_boat.pop();
+            if(t0<15000-berth[tar].transport_time-2&&t0>=15000-500-berth[tar^1].transport_time-2-boat_capacity/berth[tar^1].loading_speed)
+            { //如果船来得及在现在这个泊位出海但来不及在下一个泊位出海，则在此泊位等待
+                return -1;
+            }
+            //不然，开往下一个泊位
+            // if(gds_num+berth[tar].loading_speed>boat_capacity)cerr<<"boat capacity is too small"<<endl;
+            // if(berth[tar].gds_num-berth[tar].loading_speed<0)cerr<<"goods is too few"<<endl;
+            tar^=1;
+            return tar+1;
+        }
+        else//如果在第二个港口
+        {
+            if(t0==15000-berth[tar].transport_time-2)
+            { //如果船在最后能出海的时间，那就让它出海
                 tar=-1;
                 return tar+1;
             }
+            if(gds_num+berth[tar].loading_speed<=boat_capacity&&berth[tar].gds_num-berth[tar].loading_speed>=0)
+            { //如果船在装货中，则装货
+                gds_num+=berth[tar].loading_speed;
+                berth[tar].gds_num-=berth[tar].loading_speed;
+                return -1;
+            }
+            if(t0<15000-berth[tar].transport_time-2&&t0>=15000-berth[tar].transport_time-berth[tar^1].transport_time-2-boat_capacity/berth[tar^1].loading_speed)
+            { //如果船来得及在现在这个泊位出海但来不及在下一个泊位出海，则在此泊位等待
+                return -1;
+            }
+            //不然，开往-1
+            // if(gds_num+berth[tar].loading_speed>boat_capacity)cerr<<"boat capacity is too small"<<endl;
+            // if(berth[tar].gds_num-berth[tar].loading_speed<0)cerr<<"goods is too few"<<endl;
+            tar=-1;
+            return tar+1;
         }
     }
 };
