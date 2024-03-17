@@ -35,9 +35,10 @@ public:
     int get_berth()
     {//找到离自己最近的港口
         int b0=-1;
-        for(int b=0;b<10;++b)if(berth[b].dis[y][x]<1e9)
+        for(int b=0;b<10;++b)if(berth[b].dis[y][x]<1e9&&berth[b].robots<4)
             if(b0==-1||berth[b0].dis[y][x]>berth[b].dis[y][x])
                 b0=b;
+        // berth[b0].robots++;
         return b0;
     }
     bool in_berth(int id,int x,int y)
@@ -124,31 +125,41 @@ public:
         if(mp[y][x]!='.'&&mp[y][x]!='B')return 0;
         return 1;
     }
-    int other_robot_dis(int x,int y)//需要避让就返回其他机器人离自己的最近值，否则返回inf
+    int pri;
+    int get_priority()
     {
-        int dis=1e9;
-        for(int i=0;i<robot_num;++i)if(i!=id)
+        if(t0%4!=1)return pri;
+        int ber=get_berth();if(ber==-1)return 1e9;
+        pri=10*berth[ber].dis[y][x]+id;
+        return pri;
+    }
+    int other_robot_dis(int x,int y,int x0,int y0)//需要避让就返回其他机器人离自己的最近值，否则返回inf
+    {
+        int dis=1e9;int ber=get_berth();if(ber==-1)return 1e9;
+        for(int i=0;i<robot_num;++i)if(i!=id&&berth[ber].dis[robot_data[i].y][robot_data[i].x]<1e9)
         {
-            if(id>i)continue;
+            if(pri>robot_data[i].pri)continue;//优先级越高，越能行动
             dis=min(dis,man_dis(x,y,robot_data[i].x,robot_data[i].y));
         }
         return dis;
     }
     int check_coll()//检查当前行动机器人是否会碰撞，如果会碰撞且需要避让，那么返回应进行的避让操作
     {//一个机器人应当距离其他机器人两格及以上
-        // return -1;
-
-        if(other_robot_dis(x,y)>=3)return -1;
+        if(other_robot_dis(x,y,x,y)>=3)return -1;
         int randi[4]={0,1,2,3};random_shuffle(randi,randi+4);
+        int fin_act=-1,fin_dis=0;
         for(int i=0;i<4;++i)
         {
             int act=randi[i];
             // int act=i;
             int xx=x+dx[act],yy=y+dy[act];
-            if(other_robot_dis(xx,yy)>=2&&walkable(xx,yy))
-                return act;
+            int dis=other_robot_dis(xx,yy,x,y);
+            if(dis>fin_dis&&walkable(xx,yy))
+                fin_act=act,fin_dis=dis;
         }
-        // while(1)cerr<<"check_coll()"<<endl;//按理来说不应该运行到这里
+        if(fin_dis>=2)return fin_act;
+        // cerr<<"check_coll()"<<endl;//按理来说不应该运行到这里
+        // while(1);
         return 4;
     }
     int get_action()

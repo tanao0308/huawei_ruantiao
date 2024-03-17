@@ -63,7 +63,7 @@ void Input()
     {
         robot[i].id=i,robot[i].t0=t0;
         scanf("%d%d%d%d",&robot[i].gds,&robot[i].y,&robot[i].x,&robot[i].status); //当前机器人是否拿着货物、位置、状态
-        robot_data[i].x=robot[i].x,robot_data[i].y=robot[i].y;
+        robot_data[i].x=robot[i].x,robot_data[i].y=robot[i].y,robot_data[i].pri=robot[i].get_priority();
 
         // if(robot[i].status==0)while(1)cerr<<"collision!"<<endl;
     }
