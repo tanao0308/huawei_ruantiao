@@ -31,15 +31,27 @@ public:
         if(action>=0&&action<4)
             printf("move %d %d\n",id,action);
     }
-
+    int target_berth;bool get_start_berth;
     int get_berth()
     {//找到离自己最近的港口
-        int b0=-1;
-        for(int b=0;b<10;++b)if(berth[b].dis[y][x]<1e9&&berth[b].robots<4)
-            if(b0==-1||berth[b0].dis[y][x]>berth[b].dis[y][x])
-                b0=b;
-        // berth[b0].robots++;
-        return b0;
+        if(!get_start_berth)
+        {
+            get_start_berth=1;int select=1e9;
+            for(int b=0;b<10;++b)if(berth[b].dis[y][x])
+            {
+                if(berth[b].start_select<select)
+                    select=berth[b].start_select,target_berth=b;
+            }
+            berth[target_berth].start_select++;
+            return target_berth;
+        }
+        if(target_berth!=-1)return target_berth;
+        for(int b=0;b<10;++b)if(berth[b].dis[y][x]<1e9&&berth[b].robots<1)//2:代表一个泊位最多2 robot
+            if(target_berth==-1||berth[target_berth].dis[y][x]>berth[b].dis[y][x])
+                target_berth=b;
+        if(target_berth==-1)return -1;
+        berth[target_berth].robots++;
+        return target_berth;
     }
     bool in_berth(int id,int x,int y)
     {
@@ -48,6 +60,7 @@ public:
         if(x>=berth[id].x+4||y>=berth[id].y+4)return 0;
         return 1;
     }
+    bool get_object;//当前帧是否需要拿物品
     int get_pre_action()
     {
         if(!status)return -1;
@@ -55,9 +68,12 @@ public:
         int ber=get_berth();if(ber==-1)return -1;
         if(!in_berth(ber,x,y))
         {
-            if(!gds)
+            if(!gds&&get_object)
             {
-                gds=1;
+                // cerr<<"get object"<<endl;while(1);
+                gds=1;get_object=0;
+                berth[ber].robots--;
+                target_berth=-1;
                 return 0;
             }
             else return -1;
@@ -168,6 +184,7 @@ public:
             int res=op.front();
             op.pop_front();
 
+            //以下为防撞
             int act=check_coll();
             if(act!=-1)
             {
@@ -175,6 +192,8 @@ public:
                 if(act==4)res=-1;
                 else op.push_front(act^1),res=act;
             }
+
+            if(op.empty())get_object=1;
             return res;
         }
         //以下是没操作序列的情况
@@ -188,6 +207,7 @@ public:
                 int res=op.front();
                 op.pop_front();
 
+                //以下为防撞
                 int act=check_coll();
                 if(act!=-1)
                 {
@@ -196,6 +216,7 @@ public:
                     else op.push_front(act^1),res=act;
                 }
 
+                if(op.empty())get_object=1;
                 return res;
             }
         }
@@ -203,6 +224,7 @@ public:
             int ber=get_berth();if(ber==-1)return -1;
             int res=berth[ber].route[y][x];
             
+            //以下为防撞
             int act=check_coll();
             if(act!=-1)
             {

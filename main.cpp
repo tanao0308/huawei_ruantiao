@@ -40,6 +40,8 @@ void Init()
 
     for(int i=0;i<berth_num;++i)
         berth[i].get_route();
+    for(int i=0;i<robot_num;++i)
+        robot[i].target_berth=-1;
 }
 void Input()
 {

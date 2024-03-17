@@ -40,6 +40,7 @@ struct Berth
     int loading_speed;
     int gds_num,robots;
     queue<int>q_boat;
+    int start_select;
     Berth(){}
     Berth(int x, int y, int transport_time, int loading_speed) {
         this -> x = x;
