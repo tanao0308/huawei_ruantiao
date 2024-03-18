@@ -24,12 +24,6 @@ struct node {
 };
 struct Gds { //每个货物如未被拿到则1000帧后消失
     int x,y,t,v,d;//位置、生成时间、价值、离最近港口距离
-    bool operator<(const Gds b)const {
-        return (double)v/d<(double)b.v/b.d;
-    }
-    bool reachable(int t0)const {
-        return t+1000-t0+2>d;
-    }
 };
 extern Gds exist_gds[200][200];
 
@@ -41,6 +35,7 @@ struct Berth
     int gds_num,robots;
     queue<int>q_boat;
     int start_select;
+    int total_gds_value;
     Berth(){}
     Berth(int x, int y, int transport_time, int loading_speed) {
         this -> x = x;
@@ -77,15 +72,6 @@ struct Berth
                 q.push(v);
             }
         }
-    }
-
-    priority_queue<Gds>q;
-    Gds get_gds(int t0)
-    {
-        while(!q.empty()&&!q.top().reachable(t0))q.pop();
-        if(q.empty())return (Gds){-1,-1,-1,-1,-1};
-        Gds gds=q.top();q.pop();
-        return gds;
     }
 };
 extern Berth berth[10];

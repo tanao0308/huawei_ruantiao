@@ -8,7 +8,7 @@ extern const int robot_num;
 extern const int boat_num;
 extern const int berth_num;
 extern const int dx[4],dy[4];
-extern int t0,money,boat_capacity;
+extern int t0,money,boat_capacity,all_gds_val;
 extern char mp[200][200];
 extern Gds exist_gds[200][200];
 extern Berth berth[10];
@@ -17,7 +17,7 @@ class ROBOT
 {
 public:
     int id,t0,x,y;
-    bool gds,status;// gds 0/1:手上有无货物，status 0/1:是否能动
+    bool gds,status;Gds tar_gds;// gds:手上货物价值，status 0/1:是否能动，tar_gds:目标货物（在去拿和拿回来之间的过程）
     stack<int>op_sta;deque<int>op;queue<node>q;
     void take_action()
     {
@@ -84,6 +84,7 @@ public:
             {
                 gds=0;
                 berth[ber].gds_num++;
+                berth[ber].total_gds_value+=tar_gds.v;
                 return 1;
             }
             else return -1;
@@ -102,12 +103,14 @@ public:
         if(tx==-1)return (Gds){-1,-1,-1,-1,-1};
         Gds res=exist_gds[ty][tx];
         exist_gds[ty][tx].t=0;
+        all_gds_val+=exist_gds[ty][tx].v;
         return res;
     }
     void get_queue()
     {//route数组表示地图上某点按route走即可到港口
         int ber=get_berth();if(ber==-1)return;
         Gds gds=get_gds(ber);if(gds.x==-1)return;
+        tar_gds=gds;
 
         while(!op_sta.empty())op_sta.pop();
         while(!op.empty())op.pop_front();

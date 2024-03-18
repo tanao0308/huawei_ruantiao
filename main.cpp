@@ -10,7 +10,7 @@ const int robot_num = 10;
 const int boat_num = 5;
 const int berth_num = 10;
 const int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1};
-int t0,money,boat_capacity;
+int t0,money,boat_capacity,all_gds_val;
 char mp[200][200];
 Berth berth[10];
 Gds exist_gds[200][200];
@@ -31,8 +31,12 @@ void Init()
         int id;
         scanf("%d",&id);
         scanf("%d%d%d%d",&berth[id].y,&berth[id].x,&berth[id].transport_time,&berth[id].loading_speed);
+        cerr<<berth[id].transport_time<<" ";
+        // cerr<<berth[id].loading_speed<<" ";
     }
+    // while(1);
     scanf("%d",&boat_capacity);
+    // cerr<<boat_capacity<<endl;while(1);
     char okk[100];
     scanf("%s",okk);
     printf("OK\n");
@@ -81,9 +85,12 @@ void Action()
 {
     for(int i=0;i<robot_num;++i)
         robot[i].take_action();
-    // if(t0==1){cerr<<"here"<<endl;while(1);}
     for(int i=0;i<boat_num;++i)
         boat[i].take_action();
+    cerr<<"All select goods value:"<<all_gds_val<<endl;
+    for(int i=0;i<10;++i)cerr<<berth[i].total_gds_value<<" ";cerr<<endl;
+    for(int i=0;i<10;++i)cerr<<berth[i].transport_time<<" ";cerr<<endl;
+    for(int i=0;i<10;++i)cerr<<(double)berth[i].total_gds_value/berth[i].transport_time<<" ";cerr<<endl;
 }
 int main()
 {
@@ -93,6 +100,9 @@ int main()
         Input();
         Action();
         puts("OK");
+
+        // if(zhen==15000)
+
         fflush(stdout);
     }
     return 0;

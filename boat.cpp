@@ -21,50 +21,63 @@ public:
     {
         int action=get_action();
         if(action==0)
-            printf("go %d\n",id);
+            printf("go %d\n",id),cerr<<"go:"<<id<<", berth:"<<tar<<endl;
         else if(action!=-1)
             printf("ship %d %d\n",id,action-1);
     }
     int get_berth0() {
-        if(berth[id*2].transport_time>berth[id*2+1].transport_time)
-            return id*2;
-        else return id*2+1;
+        int a=id*2,b=id*2+1;
+        int ta=berth[a].transport_time,tb=berth[b].transport_time;
+        int va=berth[a].total_gds_value,vb=berth[b].total_gds_value;
+        if(ta*(va+vb)+500*vb<tb*(va+vb)+500*va)return a;
+        return b;
+        // if((double)berth[id*2].total_gds_value/berth[id*2].transport_time
+        //     <(double)berth[id*2+1].total_gds_value/berth[id*2+1].transport_time)
+        //     //返回等待更不亏的港口编号
+        //     return id*2;
+        // else return id*2+1;
     }
     int get_action()
     {
         if(status==0)return -1;//在运行中，不操作
         if(tar==-1)//刚到虚拟点，去新目标
-        {
+        {//只有在虚拟点才需要重新获取tar
             gds_num=0;
             tar=get_berth0();
             return tar+1;
         }
         else if(tar==get_berth0())//如果在第一个港口
         {
-            if(t0==15000-berth[tar].transport_time-2)
-            { //如果船在最后能出海的时间，那就让它出海
-                tar=-1;
+            if(15000-t0==500+berth[tar^1].transport_time+boat_capacity/berth[tar^1].loading_speed)
+            {//如果等到了来得及在下一个泊位出海的极限值，就去下一个泊位
+                tar^=1;cerr<<"go to the small one:"<<id<<endl;
                 return tar+1;
             }
-            if(gds_num+berth[tar].loading_speed<=boat_capacity&&berth[tar].gds_num-berth[tar].loading_speed>=0)
+            if(gds_num+berth[tar].loading_speed<=boat_capacity && berth[tar].gds_num-berth[tar].loading_speed>=0)
             { //如果船在装货中，则装货
                 gds_num+=berth[tar].loading_speed;
                 berth[tar].gds_num-=berth[tar].loading_speed;
                 return -1;
             }
-            if(t0<15000-berth[tar].transport_time-2&&t0>=15000-500-berth[tar^1].transport_time-2-boat_capacity/berth[tar^1].loading_speed)
-            { //如果船来得及在现在这个泊位出海但来不及在下一个泊位出海，则在此泊位等待
+            if(15000-t0>500+berth[tar^1].transport_time+boat_capacity/berth[tar^1].loading_speed 
+                && 15000-t0<=500*2+berth[tar^1].transport_time*2+berth[tar].transport_time+boat_capacity/berth[tar].loading_speed+boat_capacity/berth[tar^1].loading_speed*2)
+            {//如果船来得及在下一个泊位出海，但来不及再次完成周期到下一个泊位出发，则等到极限值再去下一个泊位
                 return -1;
             }
             //不然，开往下一个泊位
-            // if(gds_num+berth[tar].loading_speed>boat_capacity)cerr<<"boat capacity is too small"<<endl;
+            if(gds_num+berth[tar].loading_speed>boat_capacity)
+            {
+                for(int i=0;i<100;++i)
+                    cerr<<"boat capacity is too small"<<endl;
+                // while(1);
+            }
             // if(berth[tar].gds_num-berth[tar].loading_speed<0)cerr<<"goods is too few"<<endl;
             tar^=1;
             return tar+1;
         }
         else//如果在第二个港口
         {
-            if(t0==15000-berth[tar].transport_time-2)
+            if(15000-t0==berth[tar].transport_time)
             { //如果船在最后能出海的时间，那就让它出海
                 tar=-1;
                 return tar+1;
@@ -75,8 +88,14 @@ public:
                 berth[tar].gds_num-=berth[tar].loading_speed;
                 return -1;
             }
-            if(t0<15000-berth[tar].transport_time-2&&t0>=15000-berth[tar].transport_time-berth[tar^1].transport_time-2-boat_capacity/berth[tar^1].loading_speed)
-            { //如果船来得及在现在这个泊位出海但来不及在下一个泊位出海，则在此泊位等待
+            if(15000-t0>berth[tar].transport_time
+                &&15000-t0<=2*berth[tar].transport_time+berth[tar^1].transport_time+500+boat_capacity/berth[tar].loading_speed+boat_capacity/berth[tar^1].loading_speed)
+            { //如果船来得及在现在这个泊位出海但来不及完成周期，则在此泊位等待
+                if(15000-t0>=500*2+berth[tar].transport_time+boat_capacity/berth[tar^1].loading_speed)
+                {//如果船可以到前一个再回来再出海，那就这样做
+                    tar^=1;
+                    return tar+1;
+                }
                 return -1;
             }
             //不然，开往-1
