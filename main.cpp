@@ -75,22 +75,85 @@ void Input()
     }
     for(int i=0;i<boat_num;i++)
     {
-        boat[i].id=i,boat[i].t0=t0;
-        scanf("%d%d\n", &boat[i].status, &boat[i].tar); //当前船
+        boat[i].id=i,boat[i].t0=t0;int x;
+        scanf("%d%d\n", &boat[i].status, &x); //当前船
     }
     char okk[100];
     scanf("%s",okk);
+}
+
+int waste_value(int a,int b)//-1 -> a -> b -> -1的浪费值
+{
+    int ta=berth[a].transport_time,tb=berth[b].transport_time;
+    int va=berth[a].total_gds_value,vb=berth[b].total_gds_value;
+    int la=boat_capacity/berth[a].loading_speed,lb=boat_capacity/berth[b].loading_speed;
+    return va*(500+lb+tb)+vb*tb;
+}
+int all_waste_value(vector<int>x)
+{
+    if(!x.size())return 1e9;
+    int sum=0;
+    for(int i=0;i<5;++i)
+    {
+        int a=x[i*2],b=x[i*2+1];
+        sum+=min(waste_value(a,b),waste_value(b,a));
+    }
+    return sum;
+}
+vector<int>boat_berth,best_boat_berth;bool vis[10];
+void dfs()
+{
+    if(boat_berth.size()==10)
+    {
+        if(all_waste_value(boat_berth)<all_waste_value(best_boat_berth))
+            best_boat_berth=boat_berth;
+        return;
+    }
+    for(int i=0;i<10;++i)
+        for(int j=i+1;j<10;++j)if(!vis[i]&&!vis[j])
+        {
+            vis[i]=1,vis[j]=1;
+            boat_berth.push_back(i),boat_berth.push_back(j);
+            dfs();
+            boat_berth.pop_back(),boat_berth.pop_back();
+            vis[i]=0,vis[j]=0;
+        }
+}
+void assign_boat_berth()
+{
+    dfs();
+    for(int i=0;i<5;++i)
+    {
+        int a=best_boat_berth[i*2],b=best_boat_berth[i*2+1];
+        if(waste_value(a,b)>waste_value(b,a))swap(a,b);
+        boat[i].gov_berth[0]=a,boat[i].gov_berth[1]=b;
+    }
 }
 void Action()
 {
     for(int i=0;i<robot_num;++i)
         robot[i].take_action();
-    for(int i=0;i<boat_num;++i)
-        boat[i].take_action();
-    cerr<<"All select goods value:"<<all_gds_val<<endl;
-    for(int i=0;i<10;++i)cerr<<berth[i].total_gds_value<<" ";cerr<<endl;
-    for(int i=0;i<10;++i)cerr<<berth[i].transport_time<<" ";cerr<<endl;
-    for(int i=0;i<10;++i)cerr<<(double)berth[i].total_gds_value/berth[i].transport_time<<" ";cerr<<endl;
+#define PRE_TIME 1000
+    if(t0==PRE_TIME)
+    {
+        assign_boat_berth();
+        for(int i=0;i<boat_num;++i)
+            boat[i].tar=-1;
+    }
+    if(t0>PRE_TIME)
+    {
+        for(int i=0;i<boat_num;++i)
+            boat[i].take_action();
+    }
+    if(t0>=14990)
+    {
+        cerr<<"All select goods value:"<<all_gds_val<<endl;
+        for(int i=0;i<10;++i)cerr<<berth[i].total_gds_value<<" ";cerr<<endl;
+        for(int i=0;i<10;++i)cerr<<berth[i].transport_time<<" ";cerr<<endl;
+        for(int i=0;i<10;++i)cerr<<(double)berth[i].total_gds_value/berth[i].transport_time<<" ";cerr<<endl;
+        for(int i=0;i<5;++i)cerr<<boat[i].gov_berth[0]<<" ";cerr<<endl;
+        for(int i=0;i<5;++i)cerr<<boat[i].gov_berth[1]<<" ";cerr<<endl;
+    }
 }
 int main()
 {
@@ -100,9 +163,6 @@ int main()
         Input();
         Action();
         puts("OK");
-
-        // if(zhen==15000)
-
         fflush(stdout);
     }
     return 0;
