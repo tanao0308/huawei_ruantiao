@@ -133,7 +133,7 @@ void Action()
 {
     for(int i=0;i<robot_num;++i)
         robot[i].take_action();
-#define PRE_TIME 1000
+#define PRE_TIME 2000
     if(t0==PRE_TIME)
     {
         assign_boat_berth();

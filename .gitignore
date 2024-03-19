@@ -2,3 +2,5 @@
 *.zip
 build
 WindowsReleasev1.2/replay
+testcode/.idea
+testcode/replay
