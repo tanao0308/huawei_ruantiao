@@ -63,6 +63,9 @@ void Input()
     {
         int x,y,v;
         scanf("%d%d%d",&y,&x,&v); //新增货物的位置和价值
+
+        if(v<100)continue;
+        
         exist_gds[y][x]={x,y,t0,v,0};
     }
     for(int i=0;i<robot_num;i++)
