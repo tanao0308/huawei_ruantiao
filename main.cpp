@@ -54,7 +54,7 @@ void Input()
 
     for(int i=0;i<n;++i)
         for(int j=0;j<n;++j)
-            if(exist_gds[i][j].t+1000<t0)
+            if(exist_gds[i][j].t+998<t0)
                 exist_gds[i][j].t=0;
 
     int gds_num;
@@ -64,7 +64,7 @@ void Input()
         int x,y,v;
         scanf("%d%d%d",&y,&x,&v); //新增货物的位置和价值
 
-        if(v<100)continue;
+        // if(v<100)continue;
         
         exist_gds[y][x]={x,y,t0,v,0};
     }
