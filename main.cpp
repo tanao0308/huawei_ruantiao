@@ -12,6 +12,7 @@ const int berth_num = 10;
 const int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1};
 int t0,money,boat_capacity,all_gds_val;
 char mp[200][200];
+bool time_map[200][200][300];
 Berth berth[10];
 Gds exist_gds[200][200];
 RobotData robot_data[10];
@@ -56,7 +57,7 @@ void Input()
         for(int j=0;j<n;++j)
             if(exist_gds[i][j].t+998<t0)
                 exist_gds[i][j].t=0;
-
+            
     int gds_num;
     scanf("%d",&gds_num); //当前新增货物总数
     for(int i=0;i<gds_num;++i)

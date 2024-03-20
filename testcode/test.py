@@ -3,7 +3,7 @@ import json
 import numpy as np
 
 map_num = 8
-seed_num = 1
+seed_num = 10
 
 
 def work(i, j):
@@ -15,11 +15,17 @@ def work(i, j):
     # print(command_to_execute)
     result = subprocess.run(command_to_execute, shell=True, capture_output=True, text=True)
     print("map{}, seed{} ->".format(i + 1, j), result.stdout)
-    score = json.loads(result.stdout)["score"] / seed_num
+    score = json.loads(result.stdout)["score"]
     return score
 
 
-work(7, 1)
+# work(4, 1)
+# exit()
+
+i, mean_score = 3, 0
+for j in range(seed_num):
+    mean_score += work(i, j) / seed_num
+print(mean_score)
 exit()
 
 map_scores = []
