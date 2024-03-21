@@ -19,8 +19,8 @@ def work(i, j):
     return score
 
 
-# work(4, 1)
-# exit()
+work(3, 1)
+exit()
 
 # i, mean_score = 0, 0
 # for j in range(seed_num):

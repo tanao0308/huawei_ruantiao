@@ -1,3 +1,7 @@
 # 2024华为软件精英挑战赛 我的代码
 huawei ruantiao contest
-取消一些港口，让其他港口有一个或多个机器人
+
+robot.cpp存放机器人策略
+boat.cpp存放船策略
+global.h存放泊位和其他全局信息
+
