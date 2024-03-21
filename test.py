@@ -1,10 +1,10 @@
-import subprocess
-import json
 import os
+import json
+import subprocess
 import numpy as np
 
 map_num = 8
-seed_num = 1
+seed_num = 5
 
 
 def work(i, j):
