@@ -9,7 +9,7 @@ seed_num = 3
 def work(i, j):
     PreliminaryJudge_path = "D:/Desktop/huawei_ruantiao/WindowsReleasev1.2/PreliminaryJudge"
     map_command = " -m D:/Desktop/huawei_ruantiao/WindowsReleasev1.2/maps/map{}.txt".format(i + 1)
-    seed_command = " -s {}".format(j)
+    seed_command = " -s {}".format(j + 1)
     main_path = " \"D:/Desktop/huawei_ruantiao/build/main.exe\""
     command_to_execute = PreliminaryJudge_path + map_command + seed_command + main_path
     # print(command_to_execute)
