@@ -1,16 +1,17 @@
 import subprocess
 import json
+import os
 import numpy as np
 
 map_num = 8
-seed_num = 3
+seed_num = 1
 
 
 def work(i, j):
-    PreliminaryJudge_path = "D:/Desktop/huawei_ruantiao/WindowsReleasev1.2/PreliminaryJudge"
-    map_command = " -m D:/Desktop/huawei_ruantiao/WindowsReleasev1.2/maps/map{}.txt".format(i + 1)
+    PreliminaryJudge_path = os.path.join(os.getcwd(), "WindowsReleasev1.2/PreliminaryJudge")
+    map_command = " -m WindowsReleasev1.2/maps/map{}.txt".format(i + 1)
     seed_command = " -s {}".format(j + 1)
-    main_path = " \"D:/Desktop/huawei_ruantiao/build/main.exe\""
+    main_path = " \"build/main.exe\""
     command_to_execute = PreliminaryJudge_path + map_command + seed_command + main_path
     # print(command_to_execute)
     result = subprocess.run(command_to_execute, shell=True, capture_output=True, text=True)
@@ -19,8 +20,8 @@ def work(i, j):
     return score
 
 
-work(3, 1)
-exit()
+# work(3, 1)
+# exit()
 
 # i, mean_score = 0, 0
 # for j in range(seed_num):
