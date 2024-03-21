@@ -3,7 +3,7 @@ import json
 import numpy as np
 
 map_num = 8
-seed_num = 10
+seed_num = 3
 
 
 def work(i, j):
@@ -14,7 +14,7 @@ def work(i, j):
     command_to_execute = PreliminaryJudge_path + map_command + seed_command + main_path
     # print(command_to_execute)
     result = subprocess.run(command_to_execute, shell=True, capture_output=True, text=True)
-    print("map{}, seed{} ->".format(i + 1, j), result.stdout)
+    print("map{}, seed{} ->".format(i + 1, j + 1), result.stdout)
     score = json.loads(result.stdout)["score"]
     return score
 
@@ -22,11 +22,11 @@ def work(i, j):
 # work(4, 1)
 # exit()
 
-i, mean_score = 3, 0
-for j in range(seed_num):
-    mean_score += work(i, j) / seed_num
-print(mean_score)
-exit()
+# i, mean_score = 0, 0
+# for j in range(seed_num):
+#     mean_score += work(i, j) / seed_num
+# print(mean_score)
+# exit()
 
 map_scores = []
 for i in range(map_num):
