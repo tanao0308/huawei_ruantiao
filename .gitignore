@@ -1,4 +1,7 @@
 .vscode
 *.zip
 build
-WindowsReleasev1.1/replay
+replay
+WindowsReleasev1.2/replay
+testcode/.idea
+testcode/replay
