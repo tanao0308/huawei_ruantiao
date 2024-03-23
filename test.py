@@ -4,7 +4,7 @@ import subprocess
 import numpy as np
 
 map_num = 8
-seed_num = 5
+seed_num = 3
 
 
 def work(i, j):
@@ -28,6 +28,12 @@ def work(i, j):
 #     mean_score += work(i, j) / seed_num
 # print(mean_score)
 # exit()
+
+j, mean_score = 2, 0
+for i in range(map_num):
+    mean_score += work(i, j) / map_num
+print(mean_score)
+exit()
 
 map_scores = []
 for i in range(map_num):

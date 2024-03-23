@@ -24,6 +24,9 @@ public:
     {
         int T=berth[gov_berth[0]].transport_time+boat_capacity/berth[gov_berth[0]].loading_speed+500+boat_capacity/berth[gov_berth[1]].loading_speed+berth[gov_berth[1]].transport_time;
         int left_time=T-(15000-t0)%T;
+        if(15000-t0<T&&left_time<=berth[gov_berth[0]].transport_time+boat_capacity/berth[gov_berth[0]].loading_speed)
+            berth[gov_berth[0]].robots=999,berth[gov_berth[1]].robots-=1;
+        
         if(left_time==1)
         {
             is_start=1;
