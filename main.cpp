@@ -10,7 +10,7 @@ const int robot_num = 10;
 const int boat_num = 5;
 const int berth_num = 10;
 const int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1};
-int t0,money,boat_capacity;
+int t0,money,boat_capacity,all_gds_val;
 char mp[200][200];
 int mp_gds[200][200];
 int mp_ber[200][200];
@@ -22,14 +22,11 @@ BOAT boat[5];
 
 int select_k()
 {
-    // return 9;
     if(mp[87][13]=='B'&&mp[90][16]=='B')//map1
-        return 3;//期望来讲选5会比较优
+        return 0;
     if(mp[32][175]=='B'&&mp[35][178]=='B')//map2
-    {
-        return 3;
-    }
-    return 2;//map3
+        return 4;
+    return 0;//map3
     // return 1;
 }
 void get_mp_ber()
@@ -56,18 +53,6 @@ void get_mp_ber()
     for(int i=0;i<berth_num;++i)
         if(sum_dis[i]>=a[k]) //表示取前10-k大的港口
             use_berth[i]=1;
-    // 以下为弃置方案
-    // double k=0.2;//0.3map1:19.5w 0.4map1:20w 0.5map1:19.1w 0.6map1:19w
-    // bool use_berth[10]={0};
-    // for(int i=0;i<berth_num;++i)
-    //     if(sum_dis[i]>0.1*sum_dis[10]*k) //表示如果管辖范围大于某个值则启用这个港口
-    //         use_berth[i]=1;
-
-    cerr<<"-------------------------------"<<endl;
-    cerr<<"sum dis="<<sum_dis[10]<<endl;
-    cerr<<a[k]<<"||"<<166666<<endl;
-    for(int i=0;i<=berth_num;++i)cerr<<sum_dis[i]<<" ";cerr<<endl;
-    // while(1);
     
     //现在已知港口的启用情况，接下来给港口分配管辖区域和机器人数量
     memset(sum_dis,0,sizeof sum_dis);
@@ -86,11 +71,6 @@ void get_mp_ber()
             sum_dis[b0]+=berth[b0].dis[i][j];
             sum_dis[10]+=berth[b0].dis[i][j];
         }
-
-    cerr<<"-------------------------------"<<endl;
-    for(int i=0;i<berth_num;++i)cerr<<use_berth[i]<<" ";cerr<<endl;
-    for(int i=0;i<berth_num;++i)cerr<<sum_dis[i]<<" ";cerr<<endl;
-    // while(1);
     
 
     int p=0;//当前准备分配的机器人id
@@ -114,27 +94,7 @@ void get_mp_ber()
                 robot[i].berth_id=b0;
                 break;
             }
-    }cerr<<endl;
-    // while(1);
-
-    // for(int i=0;i<robot_num;++i)
-    //     cerr<<robot[i].get_berth()<<" ";cerr<<endl;
-    // while(1);
-}
-void print_map()
-{
-    int watch=9;
-    cerr<<endl;
-    for(int i=0;i<n;++i)
-    {
-        for(int j=0;j<n;++j)
-            if(mp_ber[i][j]==-1)cerr<<" X";
-            else if(mp_ber[i][j]==watch)cerr<<" "<<'O';
-            else cerr<<" .";
-            // else cerr<<" .";
-        cerr<<endl;
     }
-    while(1);
 }
 void Init()
 {
@@ -177,9 +137,7 @@ void Input()
     {
         robot[i].id=i,robot[i].t0=t0;
         scanf("%d%d%d%d",&robot[i].gds,&robot[i].y,&robot[i].x,&robot[i].status); //当前机器人是否拿着货物、位置、状态
-        robot_data[i].x=robot[i].x,robot_data[i].y=robot[i].y;
-
-        // if(robot[i].status==0)while(1)cerr<<"collision!"<<endl;
+        robot_data[i].x=robot[i].x,robot_data[i].y=robot[i].y;robot_data[i].pri=robot[i].get_priority();
     }
     for(int i=0;i<boat_num;i++)
     {
@@ -189,12 +147,79 @@ void Input()
     char okk[100];
     scanf("%s",okk);
 }
+
+int waste_value(int a,int b)//-1 -> a -> b -> -1的浪费值
+{
+    int ta=berth[a].transport_time,tb=berth[b].transport_time;
+    int va=berth[a].total_gds_value,vb=berth[b].total_gds_value;
+    int la=boat_capacity/berth[a].loading_speed,lb=boat_capacity/berth[b].loading_speed;
+    return va*(500+lb+tb)+vb*tb;
+}
+int all_waste_value(vector<int>x)
+{
+    if(!x.size())return 1e9;
+    int sum=0;
+    for(int i=0;i<5;++i)
+    {
+        int a=x[i*2],b=x[i*2+1];
+        sum+=min(waste_value(a,b),waste_value(b,a));
+    }
+    return sum;
+}
+vector<int>boat_berth,best_boat_berth;bool vis[10];
+void dfs()
+{
+    if(boat_berth.size()==10)
+    {
+        if(all_waste_value(boat_berth)<all_waste_value(best_boat_berth))
+            best_boat_berth=boat_berth;
+        return;
+    }
+    for(int i=0;i<10;++i)
+        for(int j=i+1;j<10;++j)if(!vis[i]&&!vis[j])
+        {
+            vis[i]=1,vis[j]=1;
+            boat_berth.push_back(i),boat_berth.push_back(j);
+            dfs();
+            boat_berth.pop_back(),boat_berth.pop_back();
+            vis[i]=0,vis[j]=0;
+        }
+}
+void assign_boat_berth()
+{
+    dfs();
+    for(int i=0;i<5;++i)
+    {
+        int a=best_boat_berth[i*2],b=best_boat_berth[i*2+1];
+        if(waste_value(a,b)>waste_value(b,a))swap(a,b);
+        boat[i].gov_berth[0]=a,boat[i].gov_berth[1]=b;
+    }
+}
 void Action()
 {
     for(int i=0;i<robot_num;++i)
         robot[i].take_action();
-    for(int i=0;i<boat_num;++i)
-        boat[i].take_action();
+#define PRE_TIME 500
+    if(t0==PRE_TIME)
+    {
+        assign_boat_berth();
+        for(int i=0;i<boat_num;++i)
+            boat[i].tar=-1;
+    }
+    if(t0>PRE_TIME)
+    {
+        for(int i=0;i<boat_num;++i)
+            boat[i].take_action();
+    }
+    if(t0>=14990)
+    {
+        cerr<<"All select goods value:"<<all_gds_val<<endl;
+        for(int i=0;i<10;++i)cerr<<berth[i].total_gds_value<<" ";cerr<<endl;
+        for(int i=0;i<10;++i)cerr<<berth[i].transport_time<<" ";cerr<<endl;
+        for(int i=0;i<10;++i)cerr<<(double)berth[i].total_gds_value/berth[i].transport_time<<" ";cerr<<endl;
+        for(int i=0;i<5;++i)cerr<<boat[i].gov_berth[0]<<" ";cerr<<endl;
+        for(int i=0;i<5;++i)cerr<<boat[i].gov_berth[1]<<" ";cerr<<endl;
+    }
 }
 int main()
 {

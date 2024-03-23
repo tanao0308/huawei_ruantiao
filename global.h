@@ -40,6 +40,7 @@ struct Berth
     int loading_speed;
     int gds_num;
     queue<int>q_boat;
+    int total_gds_value;
     Berth(){}
     Berth(int x, int y, int transport_time, int loading_speed) {
         this -> x = x;
@@ -90,7 +91,7 @@ struct Berth
 extern Berth berth[10];
 
 struct RobotData {
-    int x,y;
+    int x,y,pri;
 };
 extern RobotData robot_data[10];
 

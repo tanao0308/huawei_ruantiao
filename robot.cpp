@@ -8,7 +8,7 @@ extern const int robot_num;
 extern const int boat_num;
 extern const int berth_num;
 extern const int dx[4],dy[4];
-extern int t0,money,boat_capacity;
+extern int t0,money,boat_capacity,all_gds_val;
 extern char mp[200][200];
 extern int mp_gds[200][200];
 extern Berth berth[10];
@@ -48,6 +48,8 @@ public:
         {
             if(mp_gds[y][x]&&!gds)
             {
+                berth[berth_id].total_gds_value+=mp_gds[y][x];
+                all_gds_val+=mp_gds[y][x];
                 mp_gds[y][x]=0;
                 gds=1;
                 return 0;
@@ -103,35 +105,43 @@ public:
         if(mp[y][x]!='.'&&mp[y][x]!='B')return 0;
         return 1;
     }
-    int other_robot_dis(int x,int y)//需要避让就返回其他机器人离自己的最近值，否则返回inf
+    int pri;
+    int get_priority()
     {
-        int dis=1e9;
+        if(t0%4!=1)return pri;
+        int ber=get_berth();if(ber==-1)return 1e9;
+        pri=10*berth[ber].dis[y][x]+id;
+        return pri;
+    }
+    int other_robot_dis(int x,int y,int x0,int y0)
+    {
+        int dis=1e9;int ber=get_berth();
         for(int i=0;i<robot_num;++i)if(i!=id)
         {
-            if(id>i)continue;
+            if(pri>robot_data[i].pri)continue;
             dis=min(dis,man_dis(x,y,robot_data[i].x,robot_data[i].y));
         }
         return dis;
     }
-    int check_coll()//检查当前行动机器人是否会碰撞，如果会碰撞且需要避让，那么返回应进行的避让操作
-    {//一个机器人应当距离其他机器人两格及以上
-        // return -1;
-
-        if(other_robot_dis(x,y)>=3)return -1;
+    int check_coll()
+    {
+        if(other_robot_dis(x,y,x,y)>=3)return -1;
         int randi[4]={0,1,2,3};random_shuffle(randi,randi+4);
+        int fin_act=-1,fin_dis=0;
         for(int i=0;i<4;++i)
         {
             int act=randi[i];
-            // int act=i;
             int xx=x+dx[act],yy=y+dy[act];
-            if(other_robot_dis(xx,yy)>=2&&walkable(xx,yy))
-                return act;
+            int dis=other_robot_dis(xx,yy,x,y);
+            if(dis>fin_dis&&walkable(xx,yy))
+                fin_act=act,fin_dis=dis;
         }
-        // while(1)cerr<<"check_coll()"<<endl;//按理来说不应该运行到这里
+        if(fin_dis>=2)return fin_act;
         return 4;
     }
     int get_action()
     {
+        if(!status)return -1;
         if(!op.empty()) {//有操作序列那么按操作序列做
             int res=op.front();
             op.pop_front();

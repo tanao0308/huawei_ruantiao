@@ -10,76 +10,54 @@ extern const int berth_num;
 extern const int dx[4],dy[4];
 extern int t0,money,boat_capacity;
 extern char mp[200][200];
-extern int mp_gds[200][200];
 extern Berth berth[10];
 
 class BOAT
 {
 public:
-    int id,t0,tar,status;//船的编号，当前帧数，当前目标（-1或港口），当前状态（0：运输中，1：正在装货/停止不动，2：泊位外等待）
+    int id,t0,status;//船的编号，当前帧数，当前状态（0：运输中，1：正在装货/停止不动，2：泊位外等待）
     int gds_num;//当前货物个数
+    int tar,gov_berth[2];//从-1到gov_berth[0]到gov_berth[1]到-1，tar表示当前目标的下标（-1或港口）
     void take_action()
     {
         int action=get_action();
         if(action==0)
-            printf("go %d\n",id);
+            printf("go %d\n",id);//cerr<<"go:"<<id<<", berth:"<<tar<<endl;
         else if(action!=-1)
             printf("ship %d %d\n",id,action-1);
     }
-    int get_target() {
-        int ber=-1;
-        for(int i=0;i<berth_num;++i)
-        {
-            if(!berth[i].q_boat.empty())
-                continue;
-            if(ber==-1||berth[ber].gds_num<berth[i].gds_num)
-                ber=i;
-        }
-        if(ber==-1)return -1;
-        berth[ber].q_boat.push(id);
-        return ber;
-        // return id*2+rand()%2;
-    }
+    bool is_start;
     int get_action()
     {
-        if(status==0)return -1;//在运行中，不操作
-        if(tar==-1)//刚到虚拟点，去新目标
+        if(berth[gov_berth[0]].total_gds_value==0)
         {
-            gds_num=0;
-            tar=get_target();
-            return tar+1;
+            int T=2*berth[gov_berth[1]].transport_time+boat_capacity/berth[gov_berth[1]].loading_speed;
+            int left_time=T-(15000-t0)%T;//[1,T]范围
+            if(left_time==1)
+            {
+                is_start=1;
+                return gov_berth[1]+1;
+            }
+            if(is_start&&left_time==berth[gov_berth[1]].transport_time+boat_capacity/berth[gov_berth[1]].loading_speed)
+                return 0;
+            return -1;
         }
-        else//不然，就是在港口
+        // if(status==0)return -1;//在运行中，不操作
+        int T=berth[gov_berth[0]].transport_time+boat_capacity/berth[gov_berth[0]].loading_speed+500+boat_capacity/berth[gov_berth[1]].loading_speed+berth[gov_berth[1]].transport_time;
+        int left_time=T-(15000-t0)%T;//[1,T]范围
+        if(left_time==1)
         {
-            if(t0==15000-berth[tar].transport_time-2)
-            { //如果船在最后能出海的时间，那就让它出海
-                tar=-1;
-                return tar+1;
-            }
-            if(t0<15000-berth[tar].transport_time-2&&t0>=15000-3*berth[tar].transport_time-boat_capacity/berth[tar].loading_speed)
-            { //如果船在接近最后时段还在港口，那就等到最后再出海
-                return -1;
-            }
-
-
-            if(gds_num+berth[tar].loading_speed<=boat_capacity&&berth[tar].gds_num-berth[tar].loading_speed>=0)//在装货中
-            {
-                gds_num+=berth[tar].loading_speed;
-                berth[tar].gds_num-=berth[tar].loading_speed;
-                return -1;
-            }
-            else
-            {
-                if(gds_num+berth[tar].loading_speed>boat_capacity)
-                {
-                    cerr<<"boat capacity is too small"<<endl;
-                    // while(1);
-                }
-                if(berth[tar].gds_num-berth[tar].loading_speed<0)cerr<<"goods is too few"<<endl;
-                berth[tar].q_boat.pop();
-                tar=-1;
-                return tar+1;
-            }
+            is_start=1;
+            return gov_berth[0]+1;
         }
+        if(is_start&&left_time==berth[gov_berth[0]].transport_time+boat_capacity/berth[gov_berth[0]].loading_speed)
+            return gov_berth[1]+1;
+        if(is_start&&left_time==berth[gov_berth[0]].transport_time+boat_capacity/berth[gov_berth[0]].loading_speed+500+boat_capacity/berth[gov_berth[1]].loading_speed)
+        {
+            // while(1);
+            return 0;
+        }
+        return -1;
+
     }
 };
