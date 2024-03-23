@@ -119,7 +119,7 @@ public:
         int dis=1e9;int ber=get_berth();
         for(int i=0;i<robot_num;++i)if(i!=id)
         {
-            if(pri>robot_data[i].pri)continue;
+            if(pri<robot_data[i].pri)continue;
             dis=min(dis,man_dis(x,y,robot_data[i].x,robot_data[i].y));
         }
         return dis;

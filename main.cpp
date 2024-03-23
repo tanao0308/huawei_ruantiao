@@ -20,14 +20,15 @@ RobotData robot_data[10];
 ROBOT robot[10];
 BOAT boat[5];
 
+int MAP;
 int select_k()
 {
-    if(mp[87][13]=='B'&&mp[90][16]=='B')//map1
+    if(MAP==1)
         return 3;
-    if(mp[32][175]=='B'&&mp[35][178]=='B')//map2
+    if(MAP==2)
         return 4;
-    return 2;//map3
-    // return 1;
+    if(MAP==3)
+        return 2;
 }
 void get_mp_ber()
 {
@@ -73,7 +74,10 @@ void get_mp_ber()
         }
     for(int b=0;b<10;++b)
     {
-        sum_dis[b]=sqrt(sum_dis[b]);
+        if(MAP!=1)
+            sum_dis[b]=sqrt(sum_dis[b]);
+        else
+            sum_dis[b]=pow(sum_dis[b],1);
         sum_dis[10]+=sum_dis[b];
     }
     
@@ -123,6 +127,12 @@ void Init()
 
     for(int i=0;i<berth_num;++i)
         berth[i].get_route();
+
+    if(mp[87][13]=='B'&&mp[90][16]=='B')//map1
+        MAP=1;
+    else if(mp[32][175]=='B'&&mp[35][178]=='B')//map2
+        MAP=2;
+    else MAP=3;
 }
 void Input()
 {
