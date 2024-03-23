@@ -22,8 +22,15 @@ BOAT boat[5];
 
 int select_k()
 {
-    // return 5;//期望来讲选5会比较优
-    return 1;
+    // return 9;
+    if(mp[87][13]=='B'&&mp[90][16]=='B')//map1
+        return 3;//期望来讲选5会比较优
+    if(mp[32][175]=='B'&&mp[35][178]=='B')//map2
+    {
+        return 3;
+    }
+    return 2;//map3
+    // return 1;
 }
 void get_mp_ber()
 {
