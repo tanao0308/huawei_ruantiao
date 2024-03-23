@@ -20,7 +20,7 @@ def work(i, j):
     return score
 
 
-work(1, 0)
+work(0, 0)
 exit()
 
 # i, mean_score = 0, 0

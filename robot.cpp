@@ -110,7 +110,8 @@ public:
     {
         if(t0%4!=1)return pri;
         int ber=get_berth();if(ber==-1)return 1e9;
-        pri=10*berth[ber].dis[y][x]+id;
+        // pri=10*berth[ber].dis[y][x]+id;
+        pri=10000*berth[ber].dis[y][x]+(y-berth[ber].y);
         return pri;
     }
     int other_robot_dis(int x,int y,int x0,int y0)
@@ -160,7 +161,18 @@ public:
         if(in_berth(get_berth(),x,y)) {//如果当前在港口（则当前手上必然是空的）
             get_queue();
             if(op.empty())//目前港口所在的区域没有物体能拿，就休息一会儿
-                return -1;
+            {
+                int res=-1;
+
+                int act=check_coll();
+                if(act!=-1)
+                {
+                    res=act;
+                    if(act==4)res=-1;
+                }
+                
+                return res;
+            }
             else
             {
                 int res=op.front();

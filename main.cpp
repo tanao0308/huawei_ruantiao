@@ -23,10 +23,10 @@ BOAT boat[5];
 int select_k()
 {
     if(mp[87][13]=='B'&&mp[90][16]=='B')//map1
-        return 0;
+        return 3;
     if(mp[32][175]=='B'&&mp[35][178]=='B')//map2
         return 4;
-    return 0;//map3
+    return 2;//map3
     // return 1;
 }
 void get_mp_ber()
@@ -71,6 +71,11 @@ void get_mp_ber()
             sum_dis[b0]+=berth[b0].dis[i][j];
             sum_dis[10]+=berth[b0].dis[i][j];
         }
+    for(int b=0;b<10;++b)
+    {
+        sum_dis[b]=sqrt(sum_dis[b]);
+        sum_dis[10]+=sum_dis[b];
+    }
     
 
     int p=0;//当前准备分配的机器人id
