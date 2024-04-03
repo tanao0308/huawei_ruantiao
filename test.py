@@ -13,7 +13,7 @@ def work(i, j):
     seed_command = " -s {}".format(j + 1)
     main_path = " \"build/main.exe\""
     command_to_execute = PreliminaryJudge_path + map_command + seed_command + main_path
-    # print(command_to_execute)
+    print(command_to_execute)
     result = subprocess.run(command_to_execute, shell=True, capture_output=True, text=True)
     print("map{}, seed{} ->".format(i + 1, j + 1), result.stdout)
     score = json.loads(result.stdout)["score"]
