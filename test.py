@@ -8,8 +8,8 @@ seed_num = 3
 
 
 def work(i, j):
-    PreliminaryJudge_path = os.path.join(os.getcwd(), "WindowsReleasev1.2/PreliminaryJudge")
-    map_command = " -m WindowsReleasev1.2/maps/map{}.txt".format(i + 1)
+    PreliminaryJudge_path = os.path.join(os.getcwd(), "windows/SemiFinalJudge")
+    map_command = " -m windows/maps/map{}.txt".format(i + 1)
     seed_command = " -s {}".format(j + 1)
     main_path = " \"build/main.exe\""
     command_to_execute = PreliminaryJudge_path + map_command + seed_command + main_path
@@ -20,8 +20,8 @@ def work(i, j):
     return score
 
 
-# work(3, 1)
-# exit()
+work(2, 0)
+exit()
 
 # i, mean_score = 0, 0
 # for j in range(seed_num):
