@@ -16,6 +16,7 @@ vector<Berth*>berth;
 int goods_num = 0;
 int frame_id = 0;
 int money, boat_capacity;
+int Boat::boat_capacity = 0;
 
 char grid[N][N];
 
@@ -65,6 +66,7 @@ void Init()
         berth.push_back(ber);
     }
     cin>>boat_capacity;
+    Boat::boat_capacity = boat_capacity;
     char okk[100];
     cin>>okk;
     printf("OK\n");

@@ -11,8 +11,8 @@ protected:
     static constexpr int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1};
 
 public:
+    static int boat_capacity;
     virtual ~Boat(){};
-
     void set(int id, int goods_num, int x, int y, int dir, int status)
     {
         this -> id = id;
