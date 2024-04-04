@@ -8,7 +8,7 @@ class Robot {
 protected:
     int id, x, y;
     int goods_num;
-    static constexpr int dx[4]={0,0,-1,1},dy[4]={1,-1,0,0};
+    static constexpr int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1};
 
 public:
     virtual ~Robot(){};
@@ -24,6 +24,12 @@ public:
     {
         cerr<<"Robot: id="<<id<<", goods_num="<<goods_num<<", x="<<x<<", y="<<y<<endl;
     }
+    bool intersect(int x,int y)
+    {
+        if(this->x==x&&this->y==y)
+            return 1;
+        return 0;
+    }
 
     virtual void action() = 0;
 };
@@ -34,6 +40,7 @@ public:
 
     virtual void action() override 
     {
+        printf("move %d %d\n", id, rand() % 4);
     }
 };
 

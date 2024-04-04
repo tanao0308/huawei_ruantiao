@@ -37,9 +37,9 @@ public:
     bool can_purchase(int money, vector<Boat*>boat)
     {
         if(money<boat_price)return 0;
-        // for(int i=0;i<boat.size();++i)
-        //     if(boat[i].insection())
-        //         return 0;
+        for(int i=0;i<boat.size();++i)
+            if(boat[i]->intersect(x,y)||boat[i]->intersect(x+2,y)||boat[i]->intersect(x,y+1)||boat[i]->intersect(x+2,y+1))
+                return 0;
         return 1;
     }
     void purchase(int&money) override 
@@ -63,9 +63,9 @@ public:
     bool can_purchase(int money, vector<Robot*>robot)
     {
         if(money<robot_price)return 0;
-        // for(int i=0;i<robot.size();++i)
-        //     if(robot[i].insection())
-        //         return 0;
+        for(int i=0;i<robot.size();++i)
+            if(robot[i]->intersect(x,y))
+                return 0;
         return 1;
     }
     void purchase(int&money) override 

@@ -82,7 +82,7 @@ void Input()
         if(val == 0) val = 0;
     }
 
-    scanf("%d", &robot_num);assert(robot_num == (int)robot.size());
+    scanf("%d", &robot_num);cerr<<robot_num<<"robot"<<robot.size()<<endl;//assert(robot_num == (int)robot.size());
     for(int i = 0; i < robot_num; i ++)
     {
         int id, goods_num, x, y;
@@ -91,7 +91,7 @@ void Input()
         robot[i]->print();
     }
 
-    scanf("%d", &boat_num);assert(boat_num == (int)boat.size());
+    scanf("%d", &boat_num);cerr<<boat_num<<"boat"<<boat.size()<<endl;//assert(boat_num == (int)boat.size());
     for(int i = 0; i < boat_num; i ++)
     {
         int id, goods_num, x, y, dir, status;
@@ -102,10 +102,15 @@ void Input()
     char okk[100];
     scanf("%s", okk);
 }
+void action()
+{
+    for(int i=0;i<robot.size();++i)
+        robot[i]->action();
+    for(int i=0;i<boat.size();++i)
+        boat[i]->action();
+}
 void purchase()
 {
-    return;
-
     if(robot.size()>=3)return;
     if(boat_purchase_point[0]->can_purchase(money, boat))
     {
@@ -120,14 +125,6 @@ void purchase()
         robot_purchase_point[0]->purchase(money);
     }
 }
-void action()
-{
-    for(int i=0;i<robot.size();++i)
-        robot[i]->action();
-    for(int i=0;i<boat.size();++i)
-        boat[i]->action();
-    purchase();
-}
 
 
 int main()
@@ -137,16 +134,8 @@ int main()
     {
         Input();
         action();
-        // for(int i = 0; i < robot_num; i ++)
-        //     printf("move %d %d\n", i, rand() % 4);
+        purchase();
 
-        // for(int i = 0; i < boat_num; i ++){
-        //     int status = abs(rand()) % 2;
-        //     if(status == 1)
-        //         printf("ship %d\n", i);
-        //     else
-        //         printf("rot %d %d\n", i, rand() % 2);
-        // }
         puts("OK");
         fflush(stdout);
     }
