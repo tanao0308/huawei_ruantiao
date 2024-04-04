@@ -46,14 +46,14 @@ void ProcessMap()
 void Init()
 {
     for(int i = 0; i < N; i ++){
-        scanf("%s", grid[i]);
+        cin>>grid[i];
     }
     ProcessMap();
-    scanf("%d", &berth_num);
+    cin>>berth_num;
     for(int i = 0; i < berth_num; i ++)
     {
         int id, x, y, loading_speed;
-        scanf("%d%d%d%d", &id, &y, &x, &loading_speed);
+        cin>>id>>y>>x>>loading_speed;
 
         int lx=x,ly=y,rx=x,ry=y;
         while(grid[ly][lx-1]=='B')lx--;
@@ -64,43 +64,43 @@ void Init()
         // ber->print();
         berth.push_back(ber);
     }
-    scanf("%d", &boat_capacity);
+    cin>>boat_capacity;
     char okk[100];
-    scanf("%s", okk);
+    cin>>okk;
     printf("OK\n");
     fflush(stdout);
 }
 void Input()
 {
-    scanf("%d", &money);
+    cin>>money;
 
-    scanf("%d", &goods_num);
+    cin>>goods_num;
     for(int i = 0; i < goods_num; i ++)
     {
         int x, y, val;
-        scanf("%d%d%d", &y, &x, &val);
+        cin>>y>>x>>val;
         if(val == 0) val = 0;
     }
 
-    scanf("%d", &robot_num);cerr<<robot_num<<"robot"<<robot.size()<<endl;//assert(robot_num == (int)robot.size());
+    cin>>robot_num;cerr<<robot_num<<"robot"<<robot.size()<<endl;//assert(robot_num == (int)robot.size());
     for(int i = 0; i < robot_num; i ++)
     {
         int id, goods_num, x, y;
-        scanf("%d%d%d%d", &id, &goods_num, &y, &x);
+        cin>>id>>goods_num>>y>>x;
         robot[i]->set(id, goods_num, x, y);
         robot[i]->print();
     }
 
-    scanf("%d", &boat_num);cerr<<boat_num<<"boat"<<boat.size()<<endl;//assert(boat_num == (int)boat.size());
+    cin>>boat_num;cerr<<boat_num<<"boat"<<boat.size()<<endl;//assert(boat_num == (int)boat.size());
     for(int i = 0; i < boat_num; i ++)
     {
         int id, goods_num, x, y, dir, status;
-        scanf("%d%d%d%d", &id, &goods_num, &y, &x, &dir, &status);
+        cin>>id>>goods_num>>y>>x>>dir>>status;
         boat[i]->set(id, goods_num, x, y, dir, status);
         boat[i]->print();
     }
     char okk[100];
-    scanf("%s", okk);
+    cin>>okk;
 }
 void action()
 {
@@ -111,7 +111,6 @@ void action()
 }
 void purchase()
 {
-    if(robot.size()>=3)return;
     if(boat_purchase_point[0]->can_purchase(money, boat))
     {
         Boat* boa = new BoatNorm();
@@ -130,7 +129,7 @@ void purchase()
 int main()
 {
     Init();
-    while(scanf("%d", &frame_id) != EOF)
+    while(cin>>frame_id)
     {
         Input();
         action();

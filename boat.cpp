@@ -28,6 +28,7 @@ public:
     }
     bool intersect(int x,int y)
     {
+        if(abs(this->x-x)<=3||abs(this->y-y)<=3)return 1;
         for(int i=0;i<2;++i)
             for(int j=0;j<3;++j)
                 if(this->x+j*dx[dir]==x&&this->y+i*dy[dir]==y)

@@ -36,6 +36,7 @@ public:
     }
     bool can_purchase(int money, vector<Boat*>boat)
     {
+        if(boat.size()>=3)return 0;
         if(money<boat_price)return 0;
         for(int i=0;i<boat.size();++i)
             if(boat[i]->intersect(x,y)||boat[i]->intersect(x+2,y)||boat[i]->intersect(x,y+1)||boat[i]->intersect(x+2,y+1))
@@ -62,6 +63,7 @@ public:
     }
     bool can_purchase(int money, vector<Robot*>robot)
     {
+        if(robot.size()>=0)return 0;
         if(money<robot_price)return 0;
         for(int i=0;i<robot.size();++i)
             if(robot[i]->intersect(x,y))
