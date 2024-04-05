@@ -1,5 +1,5 @@
-#ifndef BERTH_CPP
-#define BERTH_CPP
+#ifndef LANDS_CPP
+#define LANDS_CPP
 
 #include<bits/stdc++.h>
 using namespace std;
@@ -144,14 +144,19 @@ public:
 
 class DeliveryPoint {
 private:
-    static int x,y;
+    int x,y;
 public:
-    static int boat_map[200][200][4]; //-2表示到达终点，-1表示此状态非法，0-2表示当前状态应该走这个走法
-    static void init()
+    int boat_map[200][200][4]; //-2表示到达终点，-1表示此状态非法，0-2表示当前状态应该走这个走法
+    DeliveryPoint(){}
+    DeliveryPoint(int x, int y) {
+        this -> x = x;
+        this -> y = y;
+    }
+    void init()
     {
         init_boat_map();
     }
-    static void init_boat_map()
+    void init_boat_map()
     {
         memset(boat_map,-1,sizeof boat_map);
         queue<Bfs_boat>q;

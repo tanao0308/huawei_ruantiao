@@ -42,17 +42,26 @@ public:
 class BoatNorm : public Boat {
 private:
     Berth* ber;
+    DeliveryPoint* del;
     int load_time=0;
 public:
     ~BoatNorm() {}
 
+    void set_berth(Berth* ber)
+    {
+        this -> ber = ber;
+    }
+    void set_delivery_point(DeliveryPoint* del)
+    {
+        this -> del = del;
+    }
     virtual void action() override 
     {
         if(status==0) //正常行驶状态
         {
             if(goods_num) //当前船上有货物，则前往交货点
             {
-                int operation = DeliveryPoint::boat_map[y][x][dir];
+                int operation = del->boat_map[y][x][dir];
                 if(operation == 2)cout<<"ship "<<id<<"\n";
                 else cout<<"rot "<<id<<" "<<operation<<"\n";
             }
@@ -82,11 +91,6 @@ public:
             else //否则装载时间累加
                 load_time++;
         }
-        // int status = abs(rand()) % 2;
-        // if(status == 1)
-        //     printf("ship %d\n", id);
-        // else
-        //     printf("rot %d %d\n", id, rand() % 2);
     }
 };
 

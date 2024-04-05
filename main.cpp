@@ -22,7 +22,7 @@ char grid[N][N];
 
 vector<RobotPurchasePoint*> robot_purchase_point;
 vector<BoatPurchasePoint*> boat_purchase_point;
-vector<pair<int, int>> delivery_point;
+vector<DeliveryPoint*> delivery_point;
 void ProcessMap()
 {
     for(int i = 0; i < N; i ++){
@@ -40,7 +40,10 @@ void ProcessMap()
                 // boat_purchase_point.back()->print();
             }
             else if(grid[i][j] == 'T')
-                delivery_point.push_back(make_pair(i, j));
+            {
+                DeliveryPoint* dp = new DeliveryPoint(j,i);
+                delivery_point.push_back(dp);
+            }
         }
     }
 }
@@ -118,7 +121,9 @@ void purchase()
 {
     if(boat_purchase_point[0]->can_purchase(money, boat))
     {
-        Boat* boa = new BoatNorm();
+        BoatNorm* boa = new BoatNorm();
+        boa->set_berth(berth[0]);
+        boa->set_delivery_point(delivery_point[0]);
         boat.push_back(boa);
         boat_purchase_point[0]->purchase(money);
     }
