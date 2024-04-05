@@ -67,6 +67,9 @@ void Init()
     }
     cin>>boat_capacity;
     Boat::boat_capacity = boat_capacity;
+    for(int i=0;i<berth.size();++i)
+        berth[i]->init();
+
     char okk[100];
     cin>>okk;
     printf("OK\n");
