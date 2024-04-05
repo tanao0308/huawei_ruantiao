@@ -50,6 +50,27 @@ struct Bfs_boat
         }
         return Bfs_boat{nx,ny,ndir};
     }
+    Bfs_boat back_ship()
+    {
+        return Bfs_boat{x-dx[dir],y-dy[dir],dir};
+    }
+    Bfs_boat back_rot(int i)
+    {
+        int nx,ny,ndir=dir;
+        if(i==0)
+        {
+            ndir=clockwise_dir[(dir-1+4)%4];
+            nx=x-2*dx[ndir];
+            ny=y;
+        }
+        else
+        {
+            ndir=clockwise_dir[(dir+1)%4];
+            nx=x-bx[dir]/abs(bx[dir]);
+            ny=y-by[dir]/abs(by[dir]);
+        }
+        return Bfs_boat{nx,ny,ndir};
+    }
 };
 
 class Berth {
@@ -57,7 +78,7 @@ private:
     int id, lx, ly, rx, ry;
     int loading_speed;
 public:
-    int boat_map[200][200][4];
+    int boat_map[200][200][4]; //-2表示到达终点，-1表示此状态非法，0-2表示当前状态应该走这个走法
     int robot_map[200][200];
     Berth(){}
     Berth(int id, int lx, int ly, int rx, int ry, int loading_speed) {
@@ -83,9 +104,9 @@ public:
         init_boat_map();
         init_robot_map();
     }
-    bool vis[200][200][4];
     void init_boat_map()
     {
+        memset(boat_map,-1,sizeof boat_map);
         queue<Bfs_boat>q;
         Bfs_boat u,v;
         for(int x=lx;x<=rx;++x)
@@ -94,31 +115,71 @@ public:
                 {
                     u=(Bfs_boat){x,y,dir};
                     if(u.can_put())
+                    {
+                        boat_map[u.y][u.x][u.dir]=-2;
                         q.push(u);
+                    }
                 }
         while(!q.empty())
         {
             u=q.front();
-            vis[u.y][u.x][u.dir]=1;
             for(int i=0;i<3;++i)
             {
                 if(i==2)
-                    v=u.ship();
+                    v=u.back_ship();
                 else
-                    v=u.rot(i);
-                if(vis[v.y][v.x][v.dir]||!can_put_boat(v.x,v.y,v.dir))
+                    v=u.back_rot(i);
+                if(boat_map[v.y][v.x][v.dir]!=-1||!v.can_put())
                     continue;
+                boat_map[v.y][v.x][v.dir]=i;
                 q.push(v);
             }
         }
     }
-    bool can_put_boat(int x,int y,int dir)
-    {
-
-    }
     void init_robot_map()
     {
         return;
+    }
+};
+
+class DeliveryPoint {
+private:
+    static int x,y;
+public:
+    static int boat_map[200][200][4]; //-2表示到达终点，-1表示此状态非法，0-2表示当前状态应该走这个走法
+    static void init()
+    {
+        init_boat_map();
+    }
+    static void init_boat_map()
+    {
+        memset(boat_map,-1,sizeof boat_map);
+        queue<Bfs_boat>q;
+        Bfs_boat u,v;
+        for(int dir=0;dir<4;++dir)
+        {
+            u=(Bfs_boat){x,y,dir};
+            if(u.can_put())
+            {
+                boat_map[u.y][u.x][u.dir]=-2;
+                q.push(u);
+            }
+        }
+        while(!q.empty())
+        {
+            u=q.front();
+            for(int i=0;i<3;++i)
+            {
+                if(i==2)
+                    v=u.back_ship();
+                else
+                    v=u.back_rot(i);
+                if(boat_map[v.y][v.x][v.dir]!=-1||!v.can_put())
+                    continue;
+                boat_map[v.y][v.x][v.dir]=i;
+                q.push(v);
+            }
+        }
     }
 };
 

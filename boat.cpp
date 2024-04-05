@@ -52,7 +52,7 @@ public:
         {
             if(goods_num) //当前船上有货物，则前往交货点
             {
-                int operation = delivery_point[y][x][dir];
+                int operation = DeliveryPoint::boat_map[y][x][dir];
                 if(operation == 2)cout<<"ship "<<id<<"\n";
                 else cout<<"rot "<<id<<" "<<operation<<"\n";
             }
