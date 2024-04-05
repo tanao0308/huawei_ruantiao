@@ -139,7 +139,8 @@ void purchase()
     }
     if(robot_purchase_point[0]->can_purchase(money, robot))
     {
-        Robot* rob = new RobotNorm();
+        RobotNorm* rob = new RobotNorm();
+        rob->set_berth(berth[0]);
         robot.push_back(rob);
         robot_purchase_point[0]->purchase(money);
     }

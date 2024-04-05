@@ -2,6 +2,7 @@
 #define ROBOT_CPP
 
 #include<bits/stdc++.h>
+#include "lands.cpp"
 using namespace std;
 
 class Robot {
@@ -34,12 +35,32 @@ public:
 };
 
 class RobotNorm : public Robot {
+private:
+    Berth* ber;
 public:
     ~RobotNorm() {}
 
+    void set_berth(Berth* ber)
+    {
+        this -> ber = ber;
+    }
     virtual void action() override 
     {
-        printf("move %d %d\n", id, rand() % 4);
+        if(goods_num)
+        {
+            if(ber->in_berth(x,y))
+                cout<<"pull "<<id<<"\n";
+            else
+            {
+                int operation = ber->robot_map[y][x];
+                cout<<"move "<<id<<" "<<operation<<"\n";
+            }
+        }
+        else
+        {
+            cout<<"move "<<id<<" "<<rand() % 4<<"\n";
+            cout<<"get "<<id<<"\n";
+        }
     }
 };
 
