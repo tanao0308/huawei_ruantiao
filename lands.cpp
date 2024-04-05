@@ -77,10 +77,35 @@ struct Bfs_boat
         return Bfs_boat{nx,ny,ndir};
     }
 };
+struct Bfs_robot
+{
+    int x, y;
+    bool robot_available(char c)
+    {
+        if(c=='.'||c=='>'||c=='R'||c=='B'||c=='C'||c=='c')
+            return 1;
+        return 0;
+    }
+    bool can_put()
+    {
+        if(!robot_available(grid[y][x]))
+            return 0;
+        return 1;
+    }
+    Bfs_robot move(int i)
+    {
+        return Bfs_robot{x+dx[i],y+dy[i]};
+    }
+    Bfs_robot back_move(int i)
+    {
+        return Bfs_robot{x-dx[i],y-dy[i]};
+    }
+};
 
 class Land {
 protected:
     queue<Bfs_boat>q_boat;
+    queue<Bfs_robot>q_robot;
 public:
     int boat_map[200][200][4]; //-2表示到达终点，-1表示此状态非法，0-2表示当前状态应该走这个走法
     int robot_map[200][200];
@@ -97,7 +122,6 @@ public:
                     if(boat_map[i][j][dir]==-2)cerr<<"# ";
                     else if(boat_map[i][j][dir]==-1)cerr<<"  ";
                     else cerr<<". ";
-                    // cerr<<boat_map[i][j][dir]<<" ";
                 }
                 cerr<<endl;
             }
@@ -159,7 +183,7 @@ public:
     virtual void init_get_boat_map() override
     {
         memset(boat_map,-1,sizeof boat_map);
-        Bfs_boat u,v;
+        Bfs_boat u;
         for(int x=lx;x<=rx;++x)
             for(int y=ly;y<=ry;++y)
                 for(int dir=0;dir<4;++dir)
@@ -172,9 +196,37 @@ public:
                     }
                 }
     }
+    void init_get_robot_map()
+    {
+        memset(robot_map,-1,sizeof robot_map);
+        Bfs_robot u;
+        for(int x=lx;x<=rx;++x)
+            for(int y=ly;y<=ry;++y)
+            {
+                u=(Bfs_robot){x,y};
+                if(u.can_put())
+                {
+                    robot_map[u.y][u.x]=-2;
+                    q_robot.push(u);
+                }
+            }
+    }
     void get_robot_map()
     {
-        return;
+        init_get_robot_map();
+        Bfs_robot u,v;
+        while(!q_robot.empty())
+        {
+            u=q_robot.front();q_robot.pop();
+            for(int i=0;i<4;++i)
+            {
+                v=u.back_move(i);
+                if(!v.can_put()||robot_map[v.y][v.x]!=-1)
+                    continue;
+                robot_map[v.y][v.x]=i;
+                q_robot.push(v);
+            }
+        }
     }
 };
 
