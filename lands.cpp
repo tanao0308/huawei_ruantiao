@@ -7,7 +7,7 @@ using namespace std;
 extern char grid[200][200];
 const int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1}; //右左上下 0 1 2 3
 const int bx[4]={2,-2,1,-1},by[4]={1,-1,-2,2}; //船在四个方向时以核心点为原点最远的点的相对位置
-const int clockwise_dir[4]={3,2,0,1};
+const int cow_dir[4]={3,2,0,1},ccw_dir[4]={2,3,1,0};
 struct Bfs_boat
 {
     int x, y, dir;
@@ -39,15 +39,17 @@ struct Bfs_boat
         int nx,ny,ndir=dir;
         if(i==0)
         {
-            nx=x+2*dx[dir];
-            ny=y;
-            ndir=clockwise_dir[(dir+1)%4];
+            int delta_x[4]={2,-2,0,0},delta_y[4]={0,0,-2,2};
+            nx=x+delta_x[dir];
+            ny=y+delta_y[dir];
+            ndir=cow_dir[dir];
         }
         else
         {
-            nx=x+bx[dir]/abs(bx[dir]);
-            ny=y+by[dir]/abs(by[dir]);
-            ndir=clockwise_dir[(dir-1+4)%4];
+            int delta_x[4]={1,-1,1,-1},delta_y[4]={1,-1,-1,1};
+            nx=x+delta_x[dir];
+            ny=y+delta_y[dir];
+            ndir=ccw_dir[dir];
         }
         return Bfs_boat{nx,ny,ndir};
     }
@@ -57,18 +59,20 @@ struct Bfs_boat
     }
     Bfs_boat back_rot(int i)
     {
-        int nx,ny,ndir=dir;
+        int nx,ny,ndir;
         if(i==0)
         {
-            ndir=clockwise_dir[(dir-1+4)%4];
-            nx=x-2*dx[ndir];
-            ny=y;
+            int delta_x[4]={2,-2,0,0},delta_y[4]={0,0,-2,2};
+            ndir=ccw_dir[dir];
+            nx=x-delta_x[ndir];
+            ny=y-delta_y[ndir];
         }
         else
         {
-            ndir=clockwise_dir[(dir+1)%4];
-            nx=x-bx[dir]/abs(bx[dir]);
-            ny=y-by[dir]/abs(by[dir]);
+            int delta_x[4]={1,-1,1,-1},delta_y[4]={1,-1,-1,1};
+            ndir=cow_dir[dir];
+            nx=x-delta_x[ndir];
+            ny=y-delta_y[ndir];
         }
         return Bfs_boat{nx,ny,ndir};
     }
@@ -99,6 +103,7 @@ public:
             }
         }
     }
+    virtual void init() = 0;
     virtual void init_get_boat_map() = 0;
     void get_boat_map()
     {
@@ -146,7 +151,7 @@ public:
             return 1;
         return 0;
     }
-    void init()
+    void init() override
     {
         get_boat_map();
         get_robot_map();
@@ -182,7 +187,7 @@ public:
         this -> x = x;
         this -> y = y;
     }
-    void init()
+    void init() override
     {
         get_boat_map();
     }
