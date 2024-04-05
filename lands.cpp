@@ -74,13 +74,59 @@ struct Bfs_boat
     }
 };
 
-class Berth {
+class Land {
+protected:
+    queue<Bfs_boat>q_boat;
+public:
+    int boat_map[200][200][4]; //-2表示到达终点，-1表示此状态非法，0-2表示当前状态应该走这个走法
+    int robot_map[200][200];
+    virtual ~Land(){};
+    void print_boat_map()
+    {
+        for(int dir=0;dir<4;++dir)
+        {
+            cout<<"---------------"<<dir<<"---------------"<<endl;
+            for(int i=0;i<200;++i)
+            {
+                for(int j=0;j<200;++j)
+                {
+                    if(boat_map[i][j][dir]==-2)cerr<<"# ";
+                    else if(boat_map[i][j][dir]==-1)cerr<<"  ";
+                    else cerr<<". ";
+                    // cerr<<boat_map[i][j][dir]<<" ";
+                }
+                cerr<<endl;
+            }
+        }
+    }
+    virtual void init_get_boat_map() = 0;
+    void get_boat_map()
+    {
+        init_get_boat_map();
+        Bfs_boat u,v;
+        while(!q_boat.empty())
+        {
+            u=q_boat.front();q_boat.pop();
+            for(int i=0;i<3;++i)
+            {
+                if(i==2)
+                    v=u.back_ship();
+                else
+                    v=u.back_rot(i);
+                if(!v.can_put()||boat_map[v.y][v.x][v.dir]!=-1)
+                    continue;
+                boat_map[v.y][v.x][v.dir]=i;
+                q_boat.push(v);
+            }
+        }
+    }
+};
+
+class Berth : public Land {
 private:
     int id, lx, ly, rx, ry;
     int loading_speed;
 public:
-    int boat_map[200][200][4]; //-2表示到达终点，-1表示此状态非法，0-2表示当前状态应该走这个走法
-    int robot_map[200][200];
     Berth(){}
     Berth(int id, int lx, int ly, int rx, int ry, int loading_speed) {
         this -> id = id;
@@ -102,13 +148,12 @@ public:
     }
     void init()
     {
-        init_boat_map();
-        init_robot_map();
+        get_boat_map();
+        get_robot_map();
     }
-    void init_boat_map()
+    virtual void init_get_boat_map() override
     {
         memset(boat_map,-1,sizeof boat_map);
-        queue<Bfs_boat>q;
         Bfs_boat u,v;
         for(int x=lx;x<=rx;++x)
             for(int y=ly;y<=ry;++y)
@@ -118,36 +163,20 @@ public:
                     if(u.can_put())
                     {
                         boat_map[u.y][u.x][u.dir]=-2;
-                        q.push(u);
+                        q_boat.push(u);
                     }
                 }
-        while(!q.empty())
-        {
-            u=q.front();q.pop();
-            for(int i=0;i<3;++i)
-            {
-                if(i==2)
-                    v=u.back_ship();
-                else
-                    v=u.back_rot(i);
-                if(!v.can_put()||boat_map[v.y][v.x][v.dir]!=-1)
-                    continue;
-                boat_map[v.y][v.x][v.dir]=i;
-                q.push(v);
-            }
-        }
     }
-    void init_robot_map()
+    void get_robot_map()
     {
         return;
     }
 };
 
-class DeliveryPoint {
+class DeliveryPoint : public Land {
 private:
     int x,y;
 public:
-    int boat_map[200][200][4]; //-2表示到达终点，-1表示此状态非法，0-2表示当前状态应该走这个走法
     DeliveryPoint(){}
     DeliveryPoint(int x, int y) {
         this -> x = x;
@@ -155,12 +184,11 @@ public:
     }
     void init()
     {
-        init_boat_map();
+        get_boat_map();
     }
-    void init_boat_map()
+    virtual void init_get_boat_map() override
     {
         memset(boat_map,-1,sizeof boat_map);
-        queue<Bfs_boat>q;
         Bfs_boat u,v;
         for(int dir=0;dir<4;++dir)
         {
@@ -168,35 +196,7 @@ public:
             if(u.can_put())
             {
                 boat_map[u.y][u.x][u.dir]=-2;
-                q.push(u);
-            }
-        }
-        while(!q.empty())
-        {
-            u=q.front();q.pop();
-            for(int i=0;i<3;++i)
-            {
-                if(i==2)
-                    v=u.back_ship();
-                else
-                    v=u.back_rot(i);
-                if(!v.can_put()||boat_map[v.y][v.x][v.dir]!=-1)
-                    continue;
-                boat_map[v.y][v.x][v.dir]=i;
-                q.push(v);
-            }
-        }
-    }
-    void print()
-    {
-        for(int dir=0;dir<4;++dir)
-        {
-            cout<<"---------------"<<dir<<"---------------"<<endl;
-            for(int i=0;i<200;++i)
-            {
-                for(int j=0;j<200;++j)
-                    cerr<<boat_map[i][j][dir]<<" ";
-                cerr<<endl;
+                q_boat.push(u);
             }
         }
     }

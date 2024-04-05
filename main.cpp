@@ -71,13 +71,16 @@ void Init()
     cin>>boat_capacity;
     Boat::boat_capacity = boat_capacity;
     for(int i=0;i<berth.size();++i)
+    {
         berth[i]->init();
+        berth[i]->print_boat_map();
+        // while(1);
+    }
     for(int i=0;i<delivery_point.size();++i)
     {
         delivery_point[i]->init();
-        delivery_point[i]->print();
-        // fflush(stdout);
-        while(1);
+        delivery_point[i]->print_boat_map();
+        // while(1);
     }
 
     char okk[100];
