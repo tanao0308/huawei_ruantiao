@@ -9,13 +9,14 @@ seed_num = 3
 
 def work(i, j):
     PreliminaryJudge_path = os.path.join(os.getcwd(), "windows/SemiFinalJudge")
+    wait_command = " -f 0"
     map_command = " -m windows/maps/map{}.txt".format(i+1)
     replay_command = " -r {}_map{}_seed{}.rep".format(datetime.now().strftime('%Y-%m-%d.%H.%M.%S'),i+1,j+1)
     seed_command = " -s {}".format(j+1)
     log_command = " -l DBG"
     output_command = " -d debug.txt"
     main_path = " \"build/main.exe\""
-    command_to_execute = PreliminaryJudge_path + map_command + replay_command + seed_command + log_command + output_command + main_path
+    command_to_execute = PreliminaryJudge_path + wait_command + map_command + replay_command + seed_command + log_command + output_command + main_path
     print(command_to_execute)
     result = subprocess.run(command_to_execute, shell=True, capture_output=True, text=True)
     print("map{}, seed{} ->".format(i + 1, j + 1), result.stdout)

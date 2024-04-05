@@ -2,14 +2,13 @@
 #define BOAT_CPP
 
 #include<bits/stdc++.h>
-#include "berth.cpp"
+#include "lands.cpp"
 using namespace std;
 
 class Boat {
 protected:
     int id, x, y, dir;
     int goods_num, status;
-    static constexpr int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1};
 
 public:
     static int boat_capacity;
@@ -27,11 +26,10 @@ public:
     {
         cerr<<"Boat: id="<<id<<", goods_num="<<goods_num<<", x="<<x<<", y="<<y<<", dir="<<dir<<", status="<<status<<endl;
     }
-    bool intersect(int tx,int ty)
+    bool intersect(int tx,int ty) //判断点(ty,tx)是否在船内部
     {
-        int ox[4]={2,-2,1,-1},oy[4]={1,-1,-2,2};
         int lx=x,ly=y;
-        int rx=lx+ox[dir],ry=ly+oy[dir];
+        int rx=lx+bx[dir],ry=ly+by[dir];
         if(lx>rx)swap(lx,rx);
         if(ly>ry)swap(ly,ry);
         if(lx<=tx&&tx<=rx&&ly<=ty&&ty<=ry)return 1;
@@ -72,7 +70,7 @@ public:
         }
         else if(status==1) //恢复状态
         {
-            continue;
+            return;
         }
         else //装载状态
         {

@@ -8,7 +8,6 @@ class Robot {
 protected:
     int id, x, y;
     int goods_num;
-    static constexpr int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1};
 
 public:
     virtual ~Robot(){};
@@ -24,7 +23,7 @@ public:
     {
         cerr<<"Robot: id="<<id<<", goods_num="<<goods_num<<", x="<<x<<", y="<<y<<endl;
     }
-    bool intersect(int x,int y)
+    bool intersect(int x,int y) //判断点(ty,tx)是否和机器人重合
     {
         if(this->x==x&&this->y==y)
             return 1;

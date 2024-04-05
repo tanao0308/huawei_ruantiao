@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #include "boat.cpp"
 #include "robot.cpp"
-#include "berth.cpp"
+#include "lands.cpp"
 #include "purchase.cpp"
 using namespace std;
 const int N = 200;

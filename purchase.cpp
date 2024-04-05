@@ -4,7 +4,7 @@
 #include<bits/stdc++.h>
 #include "boat.cpp"
 #include "robot.cpp"
-#include "berth.cpp"
+#include "lands.cpp"
 using namespace std;
 
 class PurchasePoint {
@@ -34,13 +34,15 @@ public:
     {
         cerr<<"BoatPurchasePoint: x="<<x<<", y="<<y<<endl;
     }
-    bool can_purchase(int money, vector<Boat*>boat)
+    bool can_purchase(int money, vector<Boat*>boat) //判断当前售船点是否能买船
     {
         if(boat.size()>=3)return 0;
         if(money<boat_price)return 0;
-        for(int i=0;i<boat.size();++i)
-            if(boat[i]->intersect(x,y)||boat[i]->intersect(x+2,y)||boat[i]->intersect(x,y+1)||boat[i]->intersect(x+2,y+1))
-                return 0;
+        for(int i=-1;i<=2;++i)
+            for(int j=-1;j<=3;++j)
+                for(int k=0;k<boat.size();++k)
+                    if(boat[k]->intersect(x+j,y+i))
+                        return 0;
         return 1;
     }
     void purchase(int&money) override 
