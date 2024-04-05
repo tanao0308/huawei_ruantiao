@@ -12,6 +12,9 @@ int berth_num = 0;
 vector<Boat*>boat;
 vector<Robot*>robot;
 vector<Berth*>berth;
+vector<RobotPurchasePoint*> robot_purchase_point;
+vector<BoatPurchasePoint*> boat_purchase_point;
+vector<DeliveryPoint*> delivery_point;
 
 int goods_num = 0;
 int frame_id = 0;
@@ -20,9 +23,6 @@ int Boat::boat_capacity = 0;
 
 char grid[N][N];
 
-vector<RobotPurchasePoint*> robot_purchase_point;
-vector<BoatPurchasePoint*> boat_purchase_point;
-vector<DeliveryPoint*> delivery_point;
 void ProcessMap()
 {
     for(int i = 0; i < N; i ++){
@@ -41,8 +41,8 @@ void ProcessMap()
             }
             else if(grid[i][j] == 'T')
             {
-                DeliveryPoint* dp = new DeliveryPoint(j,i);
-                delivery_point.push_back(dp);
+                DeliveryPoint* del = new DeliveryPoint(j,i);
+                delivery_point.push_back(del);
             }
         }
     }
@@ -72,6 +72,13 @@ void Init()
     Boat::boat_capacity = boat_capacity;
     for(int i=0;i<berth.size();++i)
         berth[i]->init();
+    for(int i=0;i<delivery_point.size();++i)
+    {
+        delivery_point[i]->init();
+        delivery_point[i]->print();
+        // fflush(stdout);
+        while(1);
+    }
 
     char okk[100];
     cin>>okk;

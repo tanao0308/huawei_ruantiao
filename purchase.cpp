@@ -36,7 +36,7 @@ public:
     }
     bool can_purchase(int money, vector<Boat*>boat) //判断当前售船点是否能买船
     {
-        if(boat.size()>=3)return 0;
+        if(boat.size()>=1)return 0;
         if(money<boat_price)return 0;
         for(int i=-1;i<=2;++i)
             for(int j=-1;j<=3;++j)

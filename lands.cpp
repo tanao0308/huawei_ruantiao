@@ -23,6 +23,7 @@ struct Bfs_boat
         int rx=x+bx[dir],ry=y+by[dir];
         if(lx>rx)swap(lx,rx);
         if(ly>ry)swap(ly,ry);
+        if(lx<0||ly<0||rx>=200||ry>=200)return 0;
         for(int i=ly;i<=ry;++i)
             for(int j=lx;j<=rx;++j)
                 if(!boat_available(grid[i][j]))
@@ -122,14 +123,14 @@ public:
                 }
         while(!q.empty())
         {
-            u=q.front();
+            u=q.front();q.pop();
             for(int i=0;i<3;++i)
             {
                 if(i==2)
                     v=u.back_ship();
                 else
                     v=u.back_rot(i);
-                if(boat_map[v.y][v.x][v.dir]!=-1||!v.can_put())
+                if(!v.can_put()||boat_map[v.y][v.x][v.dir]!=-1)
                     continue;
                 boat_map[v.y][v.x][v.dir]=i;
                 q.push(v);
@@ -172,17 +173,30 @@ public:
         }
         while(!q.empty())
         {
-            u=q.front();
+            u=q.front();q.pop();
             for(int i=0;i<3;++i)
             {
                 if(i==2)
                     v=u.back_ship();
                 else
                     v=u.back_rot(i);
-                if(boat_map[v.y][v.x][v.dir]!=-1||!v.can_put())
+                if(!v.can_put()||boat_map[v.y][v.x][v.dir]!=-1)
                     continue;
                 boat_map[v.y][v.x][v.dir]=i;
                 q.push(v);
+            }
+        }
+    }
+    void print()
+    {
+        for(int dir=0;dir<4;++dir)
+        {
+            cout<<"---------------"<<dir<<"---------------"<<endl;
+            for(int i=0;i<200;++i)
+            {
+                for(int j=0;j<200;++j)
+                    cerr<<boat_map[i][j][dir]<<" ";
+                cerr<<endl;
             }
         }
     }
