@@ -4,13 +4,25 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+extern int frame_id;
 extern char grid[200][200];
 const int dx[4]={1,-1,0,0},dy[4]={0,0,-1,1}; //右左上下 0 1 2 3
 const int bx[4]={2,-2,1,-1},by[4]={1,-1,-2,2}; //船在四个方向时以核心点为原点最远的点的相对位置
 const int cow_dir[4]={3,2,0,1},ccw_dir[4]={2,3,1,0};
+
+struct Goods {
+    int x,y,v,t;
+    void update()
+    {
+        if(frame_id>=t+1000||v==0)
+            x=-1,y=-1,v=-1,t=-1;
+    }
+};
+extern Goods goods_map[200][200];
 struct Bfs_boat
 {
     int x, y, dir;
+    int step;
     bool boat_available(char c)
     {
         if(c=='*'||c=='~'||c=='S'||c=='B'||c=='K'||c=='C'||c=='c'||c=='T')
@@ -32,7 +44,7 @@ struct Bfs_boat
     }
     Bfs_boat ship()
     {
-        return Bfs_boat{x+dx[dir],y+dy[dir],dir};
+        return Bfs_boat{x+dx[dir],y+dy[dir],dir,step};
     }
     Bfs_boat rot(int i)
     {
@@ -51,11 +63,11 @@ struct Bfs_boat
             ny=y+delta_y[dir];
             ndir=ccw_dir[dir];
         }
-        return Bfs_boat{nx,ny,ndir};
+        return Bfs_boat{nx,ny,ndir,step};
     }
     Bfs_boat back_ship()
     {
-        return Bfs_boat{x-dx[dir],y-dy[dir],dir};
+        return Bfs_boat{x-dx[dir],y-dy[dir],dir,step};
     }
     Bfs_boat back_rot(int i)
     {
@@ -74,12 +86,13 @@ struct Bfs_boat
             nx=x-delta_x[ndir];
             ny=y-delta_y[ndir];
         }
-        return Bfs_boat{nx,ny,ndir};
+        return Bfs_boat{nx,ny,ndir,step};
     }
 };
 struct Bfs_robot
 {
     int x, y;
+    int step;
     bool robot_available(char c)
     {
         if(c=='.'||c=='>'||c=='R'||c=='B'||c=='C'||c=='c')
@@ -94,11 +107,11 @@ struct Bfs_robot
     }
     Bfs_robot move(int i)
     {
-        return Bfs_robot{x+dx[i],y+dy[i]};
+        return Bfs_robot{x+dx[i],y+dy[i],step};
     }
     Bfs_robot back_move(int i)
     {
-        return Bfs_robot{x-dx[i],y-dy[i]};
+        return Bfs_robot{x-dx[i],y-dy[i],step};
     }
 };
 
@@ -108,7 +121,7 @@ protected:
     queue<Bfs_robot>q_robot;
 public:
     int boat_map[200][200][4]; //-2表示到达终点，-1表示此状态非法，0-2表示当前状态应该走这个走法
-    int robot_map[200][200];
+    int boat_dis[200][200][4];
     virtual ~Land(){};
     void print_boat_map()
     {
@@ -142,9 +155,11 @@ public:
                     v=u.back_ship();
                 else
                     v=u.back_rot(i);
+                v.step++;
                 if(!v.can_put()||boat_map[v.y][v.x][v.dir]!=-1)
                     continue;
                 boat_map[v.y][v.x][v.dir]=i;
+                boat_dis[v.y][v.x][v.dir]=v.step;
                 q_boat.push(v);
             }
         }
@@ -156,6 +171,8 @@ private:
     int id, lx, ly, rx, ry;
     int loading_speed;
 public:
+    int robot_map[200][200];
+    int robot_dis[200][200];
     Berth(){}
     Berth(int id, int lx, int ly, int rx, int ry, int loading_speed) {
         this -> id = id;
@@ -183,12 +200,13 @@ public:
     virtual void init_get_boat_map() override
     {
         memset(boat_map,-1,sizeof boat_map);
+        memset(boat_dis,0x3f,sizeof boat_dis);
         Bfs_boat u;
         for(int x=lx;x<=rx;++x)
             for(int y=ly;y<=ry;++y)
                 for(int dir=0;dir<4;++dir)
                 {
-                    u=(Bfs_boat){x,y,dir};
+                    u=(Bfs_boat){x,y,dir,0};
                     if(u.can_put())
                     {
                         boat_map[u.y][u.x][u.dir]=-2;
@@ -199,11 +217,12 @@ public:
     void init_get_robot_map()
     {
         memset(robot_map,-1,sizeof robot_map);
+        memset(robot_dis,0x3f,sizeof robot_dis);
         Bfs_robot u;
         for(int x=lx;x<=rx;++x)
             for(int y=ly;y<=ry;++y)
             {
-                u=(Bfs_robot){x,y};
+                u=(Bfs_robot){x,y,0};
                 if(u.can_put())
                 {
                     robot_map[u.y][u.x]=-2;
@@ -221,12 +240,27 @@ public:
             for(int i=0;i<4;++i)
             {
                 v=u.back_move(i);
+                v.step++;
                 if(!v.can_put()||robot_map[v.y][v.x]!=-1)
                     continue;
                 robot_map[v.y][v.x]=i;
+                robot_dis[v.y][v.x]=v.step;
                 q_robot.push(v);
             }
         }
+    }
+    Goods get_goods()
+    {
+        Goods gds={-1,-1,-1,-1};
+        for(int i=0;i<200;++i)
+            for(int j=0;j<200;++j)if(goods_map[i][j].x!=-1)
+            {
+                Goods g = goods_map[i][j];
+                if((gds.x==-1&&g.x!=-1) || (frame_id-g.t+robot_dis[i][j]<1000&&(double)g.v/robot_dis[i][j]>(double)gds.v/robot_dis[gds.y][gds.x]))
+                    gds = goods_map[i][j];
+            }
+        goods_map[gds.y][gds.x]={-1,-1,-1,-1};
+        return gds;
     }
 };
 
@@ -249,7 +283,7 @@ public:
         Bfs_boat u,v;
         for(int dir=0;dir<4;++dir)
         {
-            u=(Bfs_boat){x,y,dir};
+            u=(Bfs_boat){x,y,dir,0};
             if(u.can_put())
             {
                 boat_map[u.y][u.x][u.dir]=-2;

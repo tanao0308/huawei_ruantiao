@@ -22,6 +22,7 @@ int money, boat_capacity;
 int Boat::boat_capacity = 0;
 
 char grid[N][N];
+Goods goods_map[200][200];
 
 void ProcessMap()
 {
@@ -73,13 +74,13 @@ void Init()
     for(int i=0;i<berth.size();++i)
     {
         berth[i]->init();
-        berth[i]->print_boat_map();
+        // berth[i]->print_boat_map();
         // while(1);
     }
     for(int i=0;i<delivery_point.size();++i)
     {
         delivery_point[i]->init();
-        delivery_point[i]->print_boat_map();
+        // delivery_point[i]->print_boat_map();
         // while(1);
     }
 
@@ -90,17 +91,22 @@ void Init()
 }
 void Input()
 {
+
     cin>>money;
 
+    for(int i=0;i<200;++i)  
+        for(int j=0;j<200;++j)
+            goods_map[i][j].update();
     cin>>goods_num;
     for(int i = 0; i < goods_num; i ++)
     {
         int x, y, val;
         cin>>y>>x>>val;
-        if(val == 0) val = 0;
+        goods_map[y][x] = Goods{x,y,val,frame_id};
     }
 
-    cin>>robot_num;cerr<<robot_num<<"robot"<<robot.size()<<endl;//assert(robot_num == (int)robot.size());
+    cin>>robot_num;
+    // cerr<<robot_num<<"robot"<<robot.size()<<endl;//assert(robot_num == (int)robot.size());
     for(int i = 0; i < robot_num; i ++)
     {
         int id, goods_num, x, y;
@@ -109,13 +115,14 @@ void Input()
         robot[i]->print();
     }
 
-    cin>>boat_num;cerr<<boat_num<<"boat"<<boat.size()<<endl;//assert(boat_num == (int)boat.size());
+    cin>>boat_num;
+    // cerr<<boat_num<<"boat"<<boat.size()<<endl;//assert(boat_num == (int)boat.size());
     for(int i = 0; i < boat_num; i ++)
     {
         int id, goods_num, x, y, dir, status;
         cin>>id>>goods_num>>y>>x>>dir>>status;
         boat[i]->set(id, goods_num, x, y, dir, status);
-        boat[i]->print();
+        // boat[i]->print();
     }
     char okk[100];
     cin>>okk;
