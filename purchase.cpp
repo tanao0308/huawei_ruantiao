@@ -50,7 +50,7 @@ public:
     void purchase(int&money) override 
     {
         money -= boat_price;
-        printf("lboat %d %d\n", y, x);
+        cout<<"lboat "<<y<<" "<<x<<"\n";
     }
 };
 
@@ -77,7 +77,7 @@ public:
     void purchase(int&money) override 
     {
         money -= robot_price;
-        printf("lbot %d %d\n", y, x);
+        cout<<"lbot "<<y<<" "<<x<<"\n";
     }
 };
 

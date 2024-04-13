@@ -88,7 +88,7 @@ void Init()
 
     char okk[100];
     cin>>okk;
-    printf("OK\n");
+    cout<<"OK\n";
     fflush(stdout);
 }
 void Input()
