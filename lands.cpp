@@ -23,9 +23,18 @@ struct Bfs_boat
 {
     int x, y, dir;
     int step;
+    bool operator<(const Bfs_boat&b)const {
+        return step>b.step;
+    }
     bool boat_available(char c)
     {
         if(c=='*'||c=='~'||c=='S'||c=='B'||c=='K'||c=='C'||c=='c'||c=='T')
+            return 1;
+        return 0;
+    }
+    bool is_swamp(char c)
+    {
+        if(c=='~'||c=='S'||c=='B'||c=='K'||c=='c')
             return 1;
         return 0;
     }
@@ -41,6 +50,18 @@ struct Bfs_boat
                 if(!boat_available(grid[i][j]))
                     return 0;
         return 1;
+    }
+    bool in_low_speed()
+    {
+        int lx=x,ly=y;
+        int rx=x+bx[dir],ry=y+by[dir];
+        if(lx>rx)swap(lx,rx);
+        if(ly>ry)swap(ly,ry);
+        for(int i=ly;i<=ry;++i)
+            for(int j=lx;j<=rx;++j)
+                if(is_swamp(grid[i][j]))
+                    return 1;
+        return 0;
     }
     Bfs_boat ship()
     {
@@ -118,7 +139,7 @@ struct Bfs_robot
 
 class Land {
 protected:
-    queue<Bfs_boat>q_boat;
+    priority_queue<Bfs_boat>q_boat;
     queue<Bfs_robot>q_robot;
 public:
     int boat_map[200][200][4]; //-2表示到达终点，-1表示此状态非法，0-2表示当前状态应该走这个走法
@@ -149,14 +170,17 @@ public:
         Bfs_boat u,v;
         while(!q_boat.empty())
         {
-            u=q_boat.front();q_boat.pop();
+            u=q_boat.top();q_boat.pop();
             for(int i=0;i<3;++i)
             {
                 if(i==2)
                     v=u.back_ship();
                 else
                     v=u.back_rot(i);
-                v.step++;
+                
+                if(v.in_low_speed())v.step+=2;
+                else v.step+=1;
+
                 if(!v.can_put()||boat_map[v.y][v.x][v.dir]!=-1)
                     continue;
                 boat_map[v.y][v.x][v.dir]=i;
