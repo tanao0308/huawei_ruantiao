@@ -101,6 +101,7 @@ struct Bfs_robot
     }
     bool can_put()
     {
+        if(x<0||y<0||x>=200||y>=200)return 0;
         if(!robot_available(grid[y][x]))
             return 0;
         return 1;
@@ -253,7 +254,7 @@ public:
     {
         Goods gds={-1,-1,-1,-1};
         for(int i=0;i<200;++i)
-            for(int j=0;j<200;++j)if(goods_map[i][j].x!=-1)
+            for(int j=0;j<200;++j)if(goods_map[i][j].x!=-1&&goods_map[i][j].v!=0&&robot_dis[i][j]<1e9)
             {
                 Goods g = goods_map[i][j];
                 if((gds.x==-1&&g.x!=-1) || (frame_id-g.t+robot_dis[i][j]<1000&&(double)g.v/robot_dis[i][j]>(double)gds.v/robot_dis[gds.y][gds.x]))
