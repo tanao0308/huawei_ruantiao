@@ -134,17 +134,20 @@ void Input()
 }
 void action()
 {
+    cerr<<"action aaa"<<endl;
     for(int i=0;i<robot.size();++i)
         robot[i]->action();
+    cerr<<"action bbb"<<endl;
     for(int i=0;i<boat.size();++i)
         boat[i]->action();
+    cerr<<"action ccc"<<endl;
 }
 void purchase()
 {
     int bpp=0,rpp=0,ber=0,dp=0;
-    // bpp = rand()%boat_purchase_point.size();
-    // ber = rand()%berth.size();
-    // dp = rand()%delivery_point.size();
+    bpp = rand()%boat_purchase_point.size();
+    ber = rand()%berth.size();
+    dp = rand()%delivery_point.size();
     if(boat_purchase_point[bpp]->can_purchase(money, boat))
     {
         BoatNorm* boa = new BoatNorm();
@@ -153,8 +156,8 @@ void purchase()
         boat.push_back(boa);
         boat_purchase_point[bpp]->purchase(money);
     }
-    // rpp = rand()%robot_purchase_point.size();
-    // ber = rand()%berth.size();
+    rpp = rand()%robot_purchase_point.size();
+    ber = rand()%berth.size();
     if(robot_purchase_point[rpp]->can_purchase(money, robot))
     {
         RobotNorm* rob = new RobotNorm();
@@ -172,8 +175,11 @@ int main()
     while(cin>>frame_id)
     {
         Input();
+        cerr<<"aaa"<<endl;
         action();
+        cerr<<"bbb"<<endl;
         purchase();
+        cerr<<"ccc"<<endl;
 
         puts("OK");
         fflush(stdout);

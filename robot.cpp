@@ -161,8 +161,11 @@ public:
         Bfs_robot g = {gds.x,gds.y,0};
         while(!ber->in_berth(g.x,g.y))
         {
+            // cerr<<g.y<<" "<<g.x<<endl;
+            // cerr<<"get_operation_queue"<<endl;
             int move=ber->robot_map[g.y][g.x];
             if(move==-1)return;
+            if(move==-2)break;
             op_sta.push(move);
             g=g.move(move);
         }
