@@ -67,7 +67,7 @@ public:
     }
     bool can_purchase(int money, vector<RobotNorm*>robot)
     {
-        if(robot.size()>=8)return 0;
+        if(robot.size()>=15)return 0;
         if(money<robot_price)return 0;
         for(int i=0;i<robot.size();++i)
             if(robot[i]->intersect(x,y))

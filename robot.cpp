@@ -117,7 +117,6 @@ public:
             int move=randi[i];
             int new_x=x+dx[move],new_y=y+dy[move];
             int dis=other_robot_dis(new_x,new_y);
-            cerr<<(Bfs_robot){new_x,new_y,0}.can_put()<<endl;
             if(dis>f_dis&&(Bfs_robot){new_x,new_y,0}.can_put())
                 f_move=move,f_dis=dis;
         }
@@ -129,11 +128,9 @@ public:
         int dis=1e9;
         for(int i=0;i<robot->size();++i)
         {
-            cerr<<priority()<<"|||"<<robot->at(i)->priority()<<" "<<robot->size()<<endl;
             if(i!=id&&priority()<robot->at(i)->priority())
                 dis=min(dis,man_dis(x,y,robot->at(i)->get_x(),robot->at(i)->get_y()));
         }
-        cerr<<dis<<"|dis|"<<" ";
         return dis;
     }
     int priority()
@@ -165,7 +162,6 @@ public:
             if(move==-1)return;
             op_sta.push(move);
             g=g.move(move);
-            cerr<<"aaa"<<endl;
         }
         while(g.x!=x||g.y!=y)
         {
@@ -176,7 +172,6 @@ public:
                 op_sta.push(move);
                 g=g2;
             }
-            cerr<<"bbb"<<endl;
         }
         while(!op_sta.empty())
         {
