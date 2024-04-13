@@ -7,7 +7,7 @@ from datetime import datetime
 map_num = 8
 seed_num = 3
 
-def work(i, j):
+def work(i, j): # map_i seed_j 
     PreliminaryJudge_path = os.path.join(os.getcwd(), "windows/SemiFinalJudge")
     wait_command = " -f 0"
     map_command = " -m windows/maps/map{}.txt".format(i+1)
@@ -24,7 +24,7 @@ def work(i, j):
     return score
 
 
-work(2, 0)
+work(1, 0)
 exit()
 
 # i, mean_score = 0, 0

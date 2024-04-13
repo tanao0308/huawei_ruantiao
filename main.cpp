@@ -9,8 +9,8 @@ const int N = 200;
 int robot_num = 0;
 int boat_num = 0;
 int berth_num = 0;
-vector<Boat*>boat;
-vector<Robot*>robot;
+vector<BoatNorm*>boat;
+vector<RobotNorm*>robot;
 vector<Berth*>berth;
 vector<RobotPurchasePoint*> robot_purchase_point;
 vector<BoatPurchasePoint*> boat_purchase_point;
@@ -148,6 +148,7 @@ void purchase()
     {
         RobotNorm* rob = new RobotNorm();
         rob->set_berth(berth[0]);
+        rob->robot = &robot;
         robot.push_back(rob);
         robot_purchase_point[0]->purchase(money);
     }

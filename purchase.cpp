@@ -7,6 +7,8 @@
 #include "lands.cpp"
 using namespace std;
 
+extern int berth_num;
+
 class PurchasePoint {
 protected:
     int x, y;
@@ -34,7 +36,7 @@ public:
     {
         cerr<<"BoatPurchasePoint: x="<<x<<", y="<<y<<endl;
     }
-    bool can_purchase(int money, vector<Boat*>boat) //判断当前售船点是否能买船
+    bool can_purchase(int money, vector<BoatNorm*>boat) //判断当前售船点是否能买船
     {
         if(boat.size()>=1)return 0;
         if(money<boat_price)return 0;
@@ -63,9 +65,9 @@ public:
     {
         cerr<<"RobotPurchasePoint: x="<<x<<", y="<<y<<endl;
     }
-    bool can_purchase(int money, vector<Robot*>robot)
+    bool can_purchase(int money, vector<RobotNorm*>robot)
     {
-        if(robot.size()>=1)return 0;
+        if(robot.size()>=8)return 0;
         if(money<robot_price)return 0;
         for(int i=0;i<robot.size();++i)
             if(robot[i]->intersect(x,y))
