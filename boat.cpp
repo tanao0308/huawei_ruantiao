@@ -41,34 +41,44 @@ public:
 
 class BoatNorm : public Boat {
 private:
-    Berth* ber;
-    DeliveryPoint* del;
     int load_time=0;
+    DeliveryPoint* del;
+    vector<Berth*>cruise;int cruise_id=0;
 public:
     ~BoatNorm() {}
 
-    void set_berth(Berth* ber)
+    void set_cruise(vector<Berth*>&berth,DeliveryPoint*delivery_point)
     {
-        this -> ber = ber;
-    }
-    void set_delivery_point(DeliveryPoint* del)
-    {
-        this -> del = del;
+        cruise_id=0;
+        for(int i=0;i<berth.size();++i)
+            cruise.push_back(berth[i]);
+        del = delivery_point;
     }
     virtual void action() override 
     {
         if(status==0) //正常行驶状态
         {
-            if(goods_num) //当前船上有货物，则前往交货点
+            if(cruise_id==cruise.size()) // 目前是准备前往交货点
             {
-                int operation = del->boat_map[y][x][dir];
-                if(operation == 2)cout<<"ship "<<id<<"\n";
-                else cout<<"rot "<<id<<" "<<operation<<"\n";
+                if(in_DeliveryPoint()) // 如果现在到了交货点，则开始新周目
+                {
+                    cruise_id = (cruise_id+1)%(cruise.size()+1);
+                }
+                else // 否则，前往交货点
+                {
+                    int operation = del->boat_map[y][x][dir];
+                    if(operation == 2)cout<<"ship "<<id<<"\n";
+                    else cout<<"rot "<<id<<" "<<operation<<"\n";
+                }
             }
-            else //当前船上无货物，则前往港口
+            else // 否则，当前前往港口cruise[cruise_id]
             {
-                if(ber->in_berth(x,y))
+                Berth*ber=cruise[cruise_id];
+                if(ber->in_berth(x,y)) // 如果现在到达了港口，则进港口，并设定下一个港口
+                {
                     cout<<"berth "<<id<<"\n";
+                    cruise_id = (cruise_id+1)%(cruise.size()+1);
+                }
                 else
                 {
                     int operation = ber->boat_map[y][x][dir];
@@ -91,6 +101,10 @@ public:
             else //否则装载时间累加
                 load_time++;
         }
+    }
+    bool in_DeliveryPoint()
+    {
+        return intersect(del->get_x(),del->get_y());
     }
 };
 

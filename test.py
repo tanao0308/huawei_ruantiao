@@ -24,7 +24,7 @@ def work(i, j): # map_i seed_j
     return score
 
 
-work(4, 0)
+work(3, 0)
 exit()
 
 # i, mean_score = 0, 0

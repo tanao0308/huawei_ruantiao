@@ -12,9 +12,9 @@ int berth_num = 0;
 vector<BoatNorm*>boat;
 vector<RobotNorm*>robot;
 vector<Berth*>berth;
+vector<DeliveryPoint*> delivery_point;
 vector<RobotPurchasePoint*> robot_purchase_point;
 vector<BoatPurchasePoint*> boat_purchase_point;
-vector<DeliveryPoint*> delivery_point;
 
 int goods_num = 0;
 int frame_id = 0;
@@ -146,18 +146,16 @@ void purchase()
 {
     int bpp=0,rpp=0,ber=0,dp=0;
     bpp = rand()%boat_purchase_point.size();
-    ber = rand()%berth.size()/2;
-    dp = rand()%delivery_point.size();
+    // dp = rand()%delivery_point.size();
     if(boat_purchase_point[bpp]->can_purchase(money, boat))
     {
         BoatNorm* boa = new BoatNorm();
-        boa->set_berth(berth[ber]);
-        boa->set_delivery_point(delivery_point[dp]);
+        boa->set_cruise(berth,delivery_point[dp]);
         boat.push_back(boa);
         boat_purchase_point[bpp]->purchase(money);
     }
     rpp = rand()%robot_purchase_point.size();
-    ber = rand()%berth.size()/2;
+    ber = rand()%berth.size();
     if(robot_purchase_point[rpp]->can_purchase(money, robot))
     {
         RobotNorm* rob = new RobotNorm();
