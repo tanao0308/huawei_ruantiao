@@ -37,13 +37,11 @@ void ProcessMap()
             {
                 RobotPurchasePoint* rpp = new RobotPurchasePoint(j,i);
                 robot_purchase_point.push_back(rpp);
-                // robot_purchase_point.back()->print();
             }
             else if(grid[i][j] == 'S')
             {
                 BoatPurchasePoint* bpp = new BoatPurchasePoint(j,i);
                 boat_purchase_point.push_back(bpp);
-                // boat_purchase_point.back()->print();
             }
             else if(grid[i][j] == 'T')
             {
@@ -88,14 +86,10 @@ void Init()
     for(int i=0;i<berth.size();++i)
     {
         berth[i]->init();
-        // berth[i]->print_boat_map();
-        // while(1);
     }
     for(int i=0;i<delivery_point.size();++i)
     {
         delivery_point[i]->init();
-        // delivery_point[i]->print_boat_map();
-        // while(1);
     }
 
     char okk[100];
@@ -105,7 +99,6 @@ void Init()
 }
 void Input()
 {
-
     cin>>money;
 
     for(int i=0;i<200;++i)  
@@ -125,7 +118,6 @@ void Input()
         int id, goods_num, x, y;
         cin>>id>>goods_num>>y>>x;
         robot[i]->set(id, goods_num, x, y);
-        // robot[i]->print();
     }
 
     cin>>boat_num;
@@ -134,10 +126,7 @@ void Input()
         int id, goods_num, x, y, dir, status;
         cin>>id>>goods_num>>y>>x>>dir>>status;
         boat[i]->set(id, goods_num, x, y, dir, status);
-        // boat[i]->print();
     }
-
-    cerr<<"robot_create_money "<<robot_create_money<<endl;
 
     char okk[100];
     cin>>okk;
@@ -153,7 +142,6 @@ void purchase()
 {
     int bpp=0,rpp=0,ber=0,dp=0;
     bpp = rand()%boat_purchase_point.size();
-    // dp = rand()%delivery_point.size();
     if(boat_purchase_point[bpp]->can_purchase(money, boat))
     {
         BoatNorm* boa = new BoatNorm();
