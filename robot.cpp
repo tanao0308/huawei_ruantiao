@@ -5,6 +5,8 @@
 #include "lands.cpp"
 using namespace std;
 
+extern int robot_create_money;
+
 class Robot {
 protected:
     int id, x, y;
@@ -64,6 +66,7 @@ public:
                 if(goods_num)
                     cout<<"pull "<<id<<"\n";
                 gds = ber->get_goods();
+                robot_create_money += gds.v;
                 status = 1;
             }
             else
