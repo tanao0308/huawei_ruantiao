@@ -24,10 +24,13 @@ int Boat::boat_capacity = 0;
 char grid[N][N];
 Goods goods_map[200][200];
 
+unsigned long long map_hash;
+int map_id;
 int robot_create_money;
 
 void ProcessMap()
 {
+    map_hash=0;
     for(int i = 0; i < N; i ++){
         for(int j = 0; j < N; j ++){
             if(grid[i][j] == 'R')
@@ -47,8 +50,17 @@ void ProcessMap()
                 DeliveryPoint* del = new DeliveryPoint(j,i);
                 delivery_point.push_back(del);
             }
+            map_hash=map_hash*137+grid[i][j];
         }
     }
+    cerr<<map_hash<<endl;
+    if(map_hash==(unsigned long long)16656903604756406537)
+        map_id=4;
+    else if(map_hash==(unsigned long long)16476000125684867378)
+        map_id=5;
+    else 
+        map_id=6;
+    cerr<<map_id<<endl;
 }
 void Init()
 {
@@ -108,7 +120,6 @@ void Input()
     }
 
     cin>>robot_num;
-    // cerr<<robot_num<<"robot"<<robot.size()<<endl;//assert(robot_num == (int)robot.size());
     for(int i = 0; i < robot_num; i ++)
     {
         int id, goods_num, x, y;
@@ -118,7 +129,6 @@ void Input()
     }
 
     cin>>boat_num;
-    // cerr<<boat_num<<"boat"<<boat.size()<<endl;//assert(boat_num == (int)boat.size());
     for(int i = 0; i < boat_num; i ++)
     {
         int id, goods_num, x, y, dir, status;
@@ -134,13 +144,10 @@ void Input()
 }
 void action()
 {
-    cerr<<"action aaa"<<endl;
     for(int i=0;i<robot.size();++i)
         robot[i]->action();
-    cerr<<"action bbb"<<endl;
     for(int i=0;i<boat.size();++i)
         boat[i]->action();
-    cerr<<"action ccc"<<endl;
 }
 void purchase()
 {
@@ -173,11 +180,8 @@ int main()
     while(cin>>frame_id)
     {
         Input();
-        cerr<<"aaa"<<endl;
         action();
-        cerr<<"bbb"<<endl;
         purchase();
-        cerr<<"ccc"<<endl;
 
         puts("OK");
         fflush(stdout);

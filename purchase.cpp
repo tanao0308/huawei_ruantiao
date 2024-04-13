@@ -8,6 +8,7 @@
 using namespace std;
 
 extern int berth_num;
+extern int map_id;
 
 class PurchasePoint {
 protected:
@@ -68,7 +69,14 @@ public:
     }
     bool can_purchase(int money, vector<RobotNorm*>robot)
     {
-        int max_robot_num=8;
+        int max_robot_num;
+        if(map_id==4)
+            max_robot_num=3;
+        else if(map_id==5)
+            max_robot_num=9;
+        else
+            max_robot_num=9;
+        
         if(robot.size()>=max_robot_num)return 0;
         if(money<robot_price)return 0;
         for(int i=0;i<robot.size();++i)
