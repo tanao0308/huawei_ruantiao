@@ -145,9 +145,9 @@ void action()
 void purchase()
 {
     int bpp=0,rpp=0,ber=0,dp=0;
-    // bpp = rand()%boat_purchase_point.size();
-    // ber = rand()%berth.size();
-    // dp = rand()%delivery_point.size();
+    bpp = rand()%boat_purchase_point.size();
+    ber = rand()%berth.size()/2;
+    dp = rand()%delivery_point.size();
     if(boat_purchase_point[bpp]->can_purchase(money, boat))
     {
         BoatNorm* boa = new BoatNorm();
@@ -156,8 +156,8 @@ void purchase()
         boat.push_back(boa);
         boat_purchase_point[bpp]->purchase(money);
     }
-    // rpp = rand()%robot_purchase_point.size();
-    ber = rand()%berth.size();
+    rpp = rand()%robot_purchase_point.size();
+    ber = rand()%berth.size()/2;
     if(robot_purchase_point[rpp]->can_purchase(money, robot))
     {
         RobotNorm* rob = new RobotNorm();

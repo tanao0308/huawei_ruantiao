@@ -38,7 +38,8 @@ public:
     }
     bool can_purchase(int money, vector<BoatNorm*>boat) //判断当前售船点是否能买船
     {
-        if(boat.size()>=1)return 0;
+        int max_boat_num=2;
+        if(boat.size()>=max_boat_num)return 0;
         if(money<boat_price)return 0;
         for(int i=-1;i<=2;++i)
             for(int j=-1;j<=3;++j)
@@ -67,7 +68,8 @@ public:
     }
     bool can_purchase(int money, vector<RobotNorm*>robot)
     {
-        if(robot.size()>=10)return 0;
+        int max_robot_num=8;
+        if(robot.size()>=max_robot_num)return 0;
         if(money<robot_price)return 0;
         for(int i=0;i<robot.size();++i)
             if(robot[i]->intersect(x,y))
