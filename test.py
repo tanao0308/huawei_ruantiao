@@ -8,9 +8,9 @@ map_num = 8
 seed_num = 3
 
 def work(i, j): # map_i seed_j 
-    PreliminaryJudge_path = os.path.join(os.getcwd(), "windows/SemiFinalJudge")
+    PreliminaryJudge_path = os.path.join(os.getcwd(), "WindowsRelease/SemiFinalJudge")
     wait_command = " -f 0"
-    map_command = " -m windows/maps/map{}.txt".format(i+1)
+    map_command = " -m WindowsRelease/maps/map{}.txt".format(i+1)
     replay_command = " -r {}_map{}_seed{}.rep".format(datetime.now().strftime('%Y-%m-%d.%H.%M.%S'),i+1,j+1)
     seed_command = " -s {}".format(j+1)
     log_command = " -l DBG"

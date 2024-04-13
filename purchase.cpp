@@ -77,7 +77,7 @@ public:
     void purchase(int&money) override 
     {
         money -= robot_price;
-        cout<<"lbot "<<y<<" "<<x<<"\n";
+        cout<<"lbot "<<y<<" "<<x<<" 0"<<"\n";
     }
 };
 
